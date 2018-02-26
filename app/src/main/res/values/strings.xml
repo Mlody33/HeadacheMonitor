@@ -4,10 +4,12 @@
     <string name="headache_label">Jak bardzo boli głowa?</string>
     <string name="date_change_label">Dodaj archiwalny wpis. </string>
     <string name="button_date_change">Zmień date</string>
-    <string name="time_change_label">, ustaw</string>
-    <string name="button_time_change"> godzine</string>
+    <string name="button_time_change">Ustaw godzine</string>
 
     <string name="date_time_sample">2018 Luty 25 12:48</string>
+
+    <string name="dialog_positive_button">Potwierdz</string>
+    <string name="dialog_negative_button">Anuluj</string>
 
     <string name="headache_adding">Zapisuje w bazie ...</string>
     <string name="headache_added">Zapisano poprawnie!</string>

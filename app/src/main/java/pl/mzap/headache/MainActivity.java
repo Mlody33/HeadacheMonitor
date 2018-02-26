@@ -10,8 +10,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import java.util.Date;
@@ -36,8 +38,10 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.progressBar)
     ProgressBar progressBarOfHeadacheDatabase;
 
-    @BindView(R.id.openPopup)
-    Button openPopup;
+    @BindView(R.id.changeDateBtn)
+    Button dateChangeBtn;
+    @BindView(R.id.changeTimeBtn)
+    Button timeChangeBtn;
 
     private List<Headache> headaches;
 
@@ -49,22 +53,55 @@ public class MainActivity extends AppCompatActivity {
 
         ratingBarListener();
         getDatabase();
-
-        openPopupListener();
+        dateChangListener();
+        timeChangListener();
 
 
     }
 
-    private void openPopupListener() {
-        openPopup.setOnClickListener(new View.OnClickListener() {
+    private void dateChangListener() {
+        dateChangeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
-//                LayoutInflater inflater = getLayoutInflater();
-//                builder.setView(inflater.inflate(R.layout.date_changer, null));
-                builder.setTitle("tytul");
-                builder.setMessage("zmiana daty");
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                LayoutInflater inflater = getLayoutInflater();
+                final View layout = inflater.inflate(R.layout.date_changer, null);
+                final DatePicker datePicker = layout.findViewById(R.id.datePicker);
+                builder.setView(layout);
+                builder.setPositiveButton(R.string.dialog_positive_button, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Log.e(TAG, "" + datePicker.getYear());
+                    }
+                });
+                builder.setNegativeButton(R.string.dialog_negative_button, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
+    }
+
+    private void timeChangListener() {
+        timeChangeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                LayoutInflater inflater = getLayoutInflater();
+                final View layout = inflater.inflate(R.layout.time_changer, null);
+                final TimePicker timePicker = layout.findViewById(R.id.timePicker);
+                builder.setView(layout);
+                builder.setPositiveButton(R.string.dialog_positive_button, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Log.e(TAG, "" + timePicker.getHour());
+                    }
+                });
+                builder.setNegativeButton(R.string.dialog_negative_button, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();

@@ -7,88 +7,44 @@
     android:layout_height="match_parent"
     tools:context="pl.mzap.headache.MainActivity">
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/dateTime"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="32dp"
+        android:text="@string/date_time_sample"
+        android:textAlignment="center"
+        android:textColor="@color/primaryText"
+        android:textSize="30sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/dateTime"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="32dp"
-            android:text="@string/date_time_sample"
-            android:textAlignment="center"
-            android:textColor="@color/primaryText"
-            android:textSize="30sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+    <Button
+        android:id="@+id/changeDateBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="32dp"
+        android:layout_weight="1"
+        android:text="@string/button_date_change"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dateTime" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintLeft_toLeftOf="parent"
-            tools:layout_editor_absoluteY="154dp">
-
-            <NumberPicker
-                android:id="@+id/numberPicker2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_weight="1"
-                app:layout_constraintStart_toEndOf="@+id/numberPicker"
-                tools:layout_editor_absoluteY="173dp" />
-
-            <NumberPicker
-                android:id="@+id/numberPicker3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_weight="1"
-                app:layout_constraintStart_toEndOf="@+id/numberPicker2"
-                tools:layout_editor_absoluteY="173dp" />
-
-            <NumberPicker
-                android:id="@+id/numberPicker4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_weight="1"
-                app:layout_constraintStart_toEndOf="@+id/numberPicker3"
-                tools:layout_editor_absoluteY="173dp" />
-
-            <Space
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="3" />
-
-            <NumberPicker
-                android:id="@+id/numberPicker"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_weight="1"
-                app:layout_constraintStart_toStartOf="parent"
-                tools:layout_editor_absoluteY="173dp" />
-
-            <NumberPicker
-                android:id="@+id/numberPicker5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_weight="1"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/numberPicker4"
-                tools:layout_editor_absoluteY="173dp" />
-
-        </LinearLayout>
-
-    </LinearLayout>
+    <Button
+        android:id="@+id/changeTimeBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="32dp"
+        android:text="@string/button_time_change"
+        app:layout_constraintHorizontal_bias="0.794"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/changeDateBtn"
+        app:layout_constraintTop_toBottomOf="@+id/dateTime" />
 
     <TextView
         android:id="@+id/headacheLabel"
@@ -112,18 +68,6 @@
         android:numStars="5"
         android:stepSize="1"
         app:layout_constraintBottom_toTopOf="@+id/progressBar"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
-
-    <Button
-        android:id="@+id/openPopup"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_weight="1"
-        android:text="Button"
-        app:layout_constraintBottom_toTopOf="@+id/headacheLabel"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
 
