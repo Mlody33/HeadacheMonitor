@@ -1,7 +1,9 @@
 package pl.mzap.headache;
 
 import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
@@ -16,6 +18,9 @@ import android.widget.RatingBar;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
 
@@ -23,6 +28,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import pl.mzap.headache.database.entity.Headache;
 
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MAINACTIVITY";
@@ -37,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
     RatingBar headacheRating;
     @BindView(R.id.progressBar)
     ProgressBar progressBarOfHeadacheDatabase;
-
     @BindView(R.id.changeDateBtn)
     Button dateChangeBtn;
     @BindView(R.id.changeTimeBtn)
@@ -45,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
 
     private List<Headache> headaches;
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,7 +61,6 @@ public class MainActivity extends AppCompatActivity {
         getDatabase();
         dateChangListener();
         timeChangListener();
-
 
     }
 
@@ -98,7 +103,10 @@ public class MainActivity extends AppCompatActivity {
                 builder.setPositiveButton(R.string.dialog_positive_button, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Log.e(TAG, "" + timePicker.getHour());
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            Log.e(TAG, "" + timePicker.getHour());
+                            timePicker.getMinute();
+                        }
                     }
                 });
                 builder.setNegativeButton(R.string.dialog_negative_button, new DialogInterface.OnClickListener() {
