@@ -15,20 +15,19 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import pl.mzap.headache.database.entity.Headache;
 
-@RequiresApi(api = Build.VERSION_CODES.O)
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MAINACTIVITY";
@@ -39,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
 
     @BindView(R.id.constraintLayout)
     ConstraintLayout constraintLayout;
+    @BindView(R.id.dateTime)
+    TextView dateTimeLabel;
     @BindView(R.id.ratingBar)
     RatingBar headacheRating;
     @BindView(R.id.progressBar)
@@ -49,19 +50,31 @@ public class MainActivity extends AppCompatActivity {
     Button timeChangeBtn;
 
     private List<Headache> headaches;
+    private Calendar selectedDate;
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        selectedDate = Calendar.getInstance();
+        selectedDate.setTime(new Date());
+
         ratingBarListener();
         getDatabase();
         dateChangListener();
         timeChangListener();
 
+        Log.e(TAG, ""+new Date());
+        Log.e(TAG, ""+new Date().getTime());
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        selectedDate.setTime(new Date());
     }
 
     private void dateChangListener() {
@@ -76,7 +89,16 @@ public class MainActivity extends AppCompatActivity {
                 builder.setPositiveButton(R.string.dialog_positive_button, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Log.e(TAG, "" + datePicker.getYear());
+                        int selectedDay = datePicker.getDayOfMonth();
+                        int selectedMonth = datePicker.getMonth();
+                        int selectedYear = datePicker.getYear();
+
+                        int currentHour = selectedDate.get(Calendar.HOUR_OF_DAY);
+                        int currentMinute = selectedDate.get(Calendar.MINUTE);
+
+                        selectedDate.set(selectedYear, selectedMonth, selectedDay, currentHour, currentMinute);
+                        Log.d(TAG, "selectedDate time in millis on date picker " + selectedDate.getTimeInMillis());
+                        Log.i(TAG, "DATE " + selectedDate.getTime());
                     }
                 });
                 builder.setNegativeButton(R.string.dialog_negative_button, new DialogInterface.OnClickListener() {
@@ -99,14 +121,22 @@ public class MainActivity extends AppCompatActivity {
                 LayoutInflater inflater = getLayoutInflater();
                 final View layout = inflater.inflate(R.layout.time_changer, null);
                 final TimePicker timePicker = layout.findViewById(R.id.timePicker);
+                timePicker.setIs24HourView(true);
                 builder.setView(layout);
                 builder.setPositiveButton(R.string.dialog_positive_button, new DialogInterface.OnClickListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.M) //TODO Works only with Marshmallow API
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            Log.e(TAG, "" + timePicker.getHour());
-                            timePicker.getMinute();
-                        }
+                        int currentDay = selectedDate.get(Calendar.DAY_OF_MONTH);
+                        int currentMonth = selectedDate.get(Calendar.MONTH);
+                        int currentYear = selectedDate.get(Calendar.YEAR);
+
+                        int selectedHour = timePicker.getHour();
+                        int selectedMinute = timePicker.getMinute();
+
+                        selectedDate.set(currentYear, currentMonth, currentDay, selectedHour, selectedMinute);
+                        Log.d(TAG, "selectedDate time in millis on time picker" + selectedDate.getTimeInMillis());
+                        Log.i(TAG, "DATE " + selectedDate.getTime());
                     }
                 });
                 builder.setNegativeButton(R.string.dialog_negative_button, new DialogInterface.OnClickListener() {
