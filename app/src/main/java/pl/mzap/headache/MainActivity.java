@@ -1,5 +1,6 @@
 package pl.mzap.headache;
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
@@ -8,8 +9,11 @@ import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -19,10 +23,10 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -30,7 +34,7 @@ import pl.mzap.headache.database.entity.Headache;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = "MAINACTIVITY";
+    private static final String TAG = "MAIN_ACTIVITY";
 
     private static final int SELF_DISAPPEARANCE = 2;
     private static final int ACTIVITY_FINISHED = 3;
@@ -38,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
 
     @BindView(R.id.constraintLayout)
     ConstraintLayout constraintLayout;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
     @BindView(R.id.dateTime)
     TextView dateTimeLabel;
     @BindView(R.id.ratingBar)
@@ -51,39 +57,64 @@ public class MainActivity extends AppCompatActivity {
 
     private List<Headache> headaches;
     private Calendar selectedDate;
+    private int timeUpdateCounter = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        setSupportActionBar(toolbar);
 
         selectedDate = Calendar.getInstance();
         selectedDate.setTime(new Date());
 
-        ratingBarListener();
         getDatabase();
-        dateChangListener();
-        timeChangListener();
+        ratingBarListener();
+        dateChangeListener();
+        timeChangeListener();
 
-        Log.e(TAG, ""+new Date());
-        Log.e(TAG, ""+new Date().getTime());
+    }
 
+    private void updateDateTimeLabel(Date date) {
+        @SuppressLint("SimpleDateFormat")
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMM HH:mm");
+        dateTimeLabel.setText(dateFormatter.format(date));
+        Toast.makeText(this, R.string.toast_date_time_label_updated + " > " + timeUpdateCounter, Toast.LENGTH_SHORT).show();
+        timeUpdateCounter++;
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         selectedDate.setTime(new Date());
+        updateDateTimeLabel(selectedDate.getTime());
     }
 
-    private void dateChangListener() {
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_activity_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()){
+            case R.id.set_current_date_time_menu:
+                selectedDate.setTime(new Date());
+                updateDateTimeLabel(selectedDate.getTime());
+                break;
+        }
+        return true;
+    }
+
+    private void dateChangeListener() {
         dateChangeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                 LayoutInflater inflater = getLayoutInflater();
-                final View layout = inflater.inflate(R.layout.date_changer, null);
+                @SuppressLint("InflateParams") final View layout = inflater.inflate(R.layout.date_changer, null);
                 final DatePicker datePicker = layout.findViewById(R.id.datePicker);
                 builder.setView(layout);
                 builder.setPositiveButton(R.string.dialog_positive_button, new DialogInterface.OnClickListener() {
@@ -97,8 +128,7 @@ public class MainActivity extends AppCompatActivity {
                         int currentMinute = selectedDate.get(Calendar.MINUTE);
 
                         selectedDate.set(selectedYear, selectedMonth, selectedDay, currentHour, currentMinute);
-                        Log.d(TAG, "selectedDate time in millis on date picker " + selectedDate.getTimeInMillis());
-                        Log.i(TAG, "DATE " + selectedDate.getTime());
+                        updateDateTimeLabel(selectedDate.getTime());
                     }
                 });
                 builder.setNegativeButton(R.string.dialog_negative_button, new DialogInterface.OnClickListener() {
@@ -113,13 +143,13 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void timeChangListener() {
+    private void timeChangeListener() {
         timeChangeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                 LayoutInflater inflater = getLayoutInflater();
-                final View layout = inflater.inflate(R.layout.time_changer, null);
+                @SuppressLint("InflateParams") final View layout = inflater.inflate(R.layout.time_changer, null);
                 final TimePicker timePicker = layout.findViewById(R.id.timePicker);
                 timePicker.setIs24HourView(true);
                 builder.setView(layout);
@@ -135,8 +165,7 @@ public class MainActivity extends AppCompatActivity {
                         int selectedMinute = timePicker.getMinute();
 
                         selectedDate.set(currentYear, currentMonth, currentDay, selectedHour, selectedMinute);
-                        Log.d(TAG, "selectedDate time in millis on time picker" + selectedDate.getTimeInMillis());
-                        Log.i(TAG, "DATE " + selectedDate.getTime());
+                        updateDateTimeLabel(selectedDate.getTime());
                     }
                 });
                 builder.setNegativeButton(R.string.dialog_negative_button, new DialogInterface.OnClickListener() {
@@ -170,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
                 if (headacheRating.getRating() != 0f) {
                     progressBarOfHeadacheDatabase.setVisibility(View.VISIBLE);
                     final Headache headache = new Headache();
-                    headache.setDate(new Date());
+                    headache.setDate(selectedDate.getTime());
                     headache.setRating(ratingBar.getRating());
                     showHeadacheInformation(headache);
                 } else
