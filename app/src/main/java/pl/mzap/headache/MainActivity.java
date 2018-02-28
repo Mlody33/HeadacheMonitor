@@ -57,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
 
     private List<Headache> headaches;
     private Calendar selectedDate;
-    private int timeUpdateCounter = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,8 +79,7 @@ public class MainActivity extends AppCompatActivity {
         @SuppressLint("SimpleDateFormat")
         SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMM HH:mm");
         dateTimeLabel.setText(dateFormatter.format(date));
-        Toast.makeText(this, R.string.toast_date_time_label_updated + " > " + timeUpdateCounter, Toast.LENGTH_SHORT).show();
-        timeUpdateCounter++;
+        Toast.makeText(this, R.string.toast_date_time_label_updated, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -104,6 +102,12 @@ public class MainActivity extends AppCompatActivity {
                 selectedDate.setTime(new Date());
                 updateDateTimeLabel(selectedDate.getTime());
                 break;
+            case R.id.set_date:
+                showDateEditor();
+                break;
+            case R.id.set_time:
+                showTimeEditor();
+                break;
         }
         return true;
     }
@@ -112,72 +116,80 @@ public class MainActivity extends AppCompatActivity {
         dateChangeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                LayoutInflater inflater = getLayoutInflater();
-                @SuppressLint("InflateParams") final View layout = inflater.inflate(R.layout.date_changer, null);
-                final DatePicker datePicker = layout.findViewById(R.id.datePicker);
-                builder.setView(layout);
-                builder.setPositiveButton(R.string.dialog_positive_button, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        int selectedDay = datePicker.getDayOfMonth();
-                        int selectedMonth = datePicker.getMonth();
-                        int selectedYear = datePicker.getYear();
-
-                        int currentHour = selectedDate.get(Calendar.HOUR_OF_DAY);
-                        int currentMinute = selectedDate.get(Calendar.MINUTE);
-
-                        selectedDate.set(selectedYear, selectedMonth, selectedDay, currentHour, currentMinute);
-                        updateDateTimeLabel(selectedDate.getTime());
-                    }
-                });
-                builder.setNegativeButton(R.string.dialog_negative_button, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                AlertDialog dialog = builder.create();
-                dialog.show();
+                showDateEditor();
             }
         });
+    }
+
+    private void showDateEditor() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        LayoutInflater inflater = getLayoutInflater();
+        @SuppressLint("InflateParams") final View layout = inflater.inflate(R.layout.date_changer, null);
+        final DatePicker datePicker = layout.findViewById(R.id.datePicker);
+        builder.setView(layout);
+        builder.setPositiveButton(R.string.dialog_positive_button, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                int selectedDay = datePicker.getDayOfMonth();
+                int selectedMonth = datePicker.getMonth();
+                int selectedYear = datePicker.getYear();
+
+                int currentHour = selectedDate.get(Calendar.HOUR_OF_DAY);
+                int currentMinute = selectedDate.get(Calendar.MINUTE);
+
+                selectedDate.set(selectedYear, selectedMonth, selectedDay, currentHour, currentMinute);
+                updateDateTimeLabel(selectedDate.getTime());
+            }
+        });
+        builder.setNegativeButton(R.string.dialog_negative_button, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private void timeChangeListener() {
         timeChangeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                LayoutInflater inflater = getLayoutInflater();
-                @SuppressLint("InflateParams") final View layout = inflater.inflate(R.layout.time_changer, null);
-                final TimePicker timePicker = layout.findViewById(R.id.timePicker);
-                timePicker.setIs24HourView(true);
-                builder.setView(layout);
-                builder.setPositiveButton(R.string.dialog_positive_button, new DialogInterface.OnClickListener() {
-                    @RequiresApi(api = Build.VERSION_CODES.M) //TODO Works only with Marshmallow API
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        int currentDay = selectedDate.get(Calendar.DAY_OF_MONTH);
-                        int currentMonth = selectedDate.get(Calendar.MONTH);
-                        int currentYear = selectedDate.get(Calendar.YEAR);
-
-                        int selectedHour = timePicker.getHour();
-                        int selectedMinute = timePicker.getMinute();
-
-                        selectedDate.set(currentYear, currentMonth, currentDay, selectedHour, selectedMinute);
-                        updateDateTimeLabel(selectedDate.getTime());
-                    }
-                });
-                builder.setNegativeButton(R.string.dialog_negative_button, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                AlertDialog dialog = builder.create();
-                dialog.show();
+                showTimeEditor();
             }
         });
+    }
+
+    private void showTimeEditor() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        LayoutInflater inflater = getLayoutInflater();
+        @SuppressLint("InflateParams") final View layout = inflater.inflate(R.layout.time_changer, null);
+        final TimePicker timePicker = layout.findViewById(R.id.timePicker);
+        timePicker.setIs24HourView(true);
+        builder.setView(layout);
+        builder.setPositiveButton(R.string.dialog_positive_button, new DialogInterface.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.M) //TODO Works only with Marshmallow API
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                int currentDay = selectedDate.get(Calendar.DAY_OF_MONTH);
+                int currentMonth = selectedDate.get(Calendar.MONTH);
+                int currentYear = selectedDate.get(Calendar.YEAR);
+
+                int selectedHour = timePicker.getHour();
+                int selectedMinute = timePicker.getMinute();
+
+                selectedDate.set(currentYear, currentMonth, currentDay, selectedHour, selectedMinute);
+                updateDateTimeLabel(selectedDate.getTime());
+            }
+        });
+        builder.setNegativeButton(R.string.dialog_negative_button, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private void getDatabase() {

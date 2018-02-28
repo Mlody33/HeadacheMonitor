@@ -3,12 +3,21 @@
     <color name="primary">#795548</color>
     <color name="primaryDark">#5D4037</color>
     <color name="primaryLight">#D7CCC8</color>
-    <color name="accent">#d98200</color>
+    <color name="accent">#009688</color>
     <color name="primaryText">#212121</color>
     <color name="secondaryText">#757575</color>
     <color name="icons">#FFFFFF</color>
     <color name="divider">#BDBDBD</color>
 
-    <color name="activityBackground">#b9aba6</color>
+    <color name="card_color_10">#607d8b</color>
+    <color name="card_color_20">#9e9e9e</color>
+    <color name="card_color_30">#795548</color>
+    <color name="card_color_40">#ff5722</color>
+    <color name="card_color_50">#4caf50</color>
+    <color name="card_color_60">#009688</color>
+    <color name="card_color_70">#3f51b5</color>
+    <color name="card_color_80">#673ab7</color>
+    <color name="card_color_90">#9c27b0</color>
+
 </resources>
 

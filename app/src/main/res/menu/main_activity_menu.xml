@@ -5,5 +5,16 @@
         android:id="@+id/set_current_date_time_menu"
         android:icon="@drawable/set_current_date"
         android:title="@string/set_current_date_time"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/set_date"
+        android:icon="@drawable/set_date"
+        android:title="@string/set_date"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/set_time"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/set_time"
+        android:title="@string/set_time"
         app:showAsAction="ifRoom" />
 </menu>
