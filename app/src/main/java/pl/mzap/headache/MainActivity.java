@@ -5,18 +5,20 @@ import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
-import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -40,20 +42,18 @@ public class MainActivity extends AppCompatActivity {
     private static final int ACTIVITY_FINISHED = 3;
     private static final int NEW_ONE_APPEARS = 4;
 
-    @BindView(R.id.constraintLayout)
-    ConstraintLayout constraintLayout;
+    @BindView(R.id.headacheRecyclerView)
+    RecyclerView headacheRecyclerView;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+    @BindView(R.id.mainLinearLayout)
+    LinearLayout mainLinearLayout;
     @BindView(R.id.dateTime)
     TextView dateTimeLabel;
     @BindView(R.id.ratingBar)
     RatingBar headacheRating;
     @BindView(R.id.progressBar)
     ProgressBar progressBarOfHeadacheDatabase;
-    @BindView(R.id.changeDateBtn)
-    Button dateChangeBtn;
-    @BindView(R.id.changeTimeBtn)
-    Button timeChangeBtn;
 
     private List<Headache> headaches;
     private Calendar selectedDate;
@@ -68,10 +68,12 @@ public class MainActivity extends AppCompatActivity {
         selectedDate = Calendar.getInstance();
         selectedDate.setTime(new Date());
 
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+        headacheRecyclerView.setLayoutManager(layoutManager);
+        headacheRecyclerView.setItemAnimator(new DefaultItemAnimator());
+
         getDatabase();
         ratingBarListener();
-        dateChangeListener();
-        timeChangeListener();
 
     }
 
@@ -112,15 +114,6 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    private void dateChangeListener() {
-        dateChangeBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDateEditor();
-            }
-        });
-    }
-
     private void showDateEditor() {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         LayoutInflater inflater = getLayoutInflater();
@@ -149,15 +142,6 @@ public class MainActivity extends AppCompatActivity {
         });
         AlertDialog dialog = builder.create();
         dialog.show();
-    }
-
-    private void timeChangeListener() {
-        timeChangeBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showTimeEditor();
-            }
-        });
     }
 
     private void showTimeEditor() {
@@ -221,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showHeadacheInformation(final Headache headache) {
-        Snackbar snackbar = Snackbar.make(constraintLayout, R.string.headache_adding, Snackbar.LENGTH_SHORT);
+        Snackbar snackbar = Snackbar.make(mainLinearLayout, R.string.headache_adding, Snackbar.LENGTH_SHORT);
         snackbar.setAction(R.string.headache_cancel_btn, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
