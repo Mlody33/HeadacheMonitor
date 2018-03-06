@@ -8,17 +8,17 @@ import android.widget.TextView;
 
 import pl.mzap.headache.R;
 
-public class MainViewHolder extends RecyclerView.ViewHolder {
+public class ItemViewHolder extends RecyclerView.ViewHolder {
 
     public RelativeLayout relativeLayout;
-    public TextView date_label, time_label;
+    public TextView dateLabel, timeLabel;
     public RatingBar ratingBar;
 
-    public MainViewHolder(View itemView) {
+    public ItemViewHolder(View itemView) {
         super(itemView);
-        date_label = itemView.findViewById(R.id.date_label);
-        time_label = itemView.findViewById(R.id.time_label);
-        ratingBar = itemView.findViewById(R.id.ratingBar);
+        dateLabel = itemView.findViewById(R.id.date_label);
+        timeLabel = itemView.findViewById(R.id.time_label);
+        ratingBar = itemView.findViewById(R.id.rating_bar_header);
 
         relativeLayout = itemView.findViewById(R.id.headache_card_layout);
     }

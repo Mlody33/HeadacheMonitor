@@ -19,19 +19,18 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.RatingBar;
-import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import pl.mzap.headache.adapter.MainAdapter;
 import pl.mzap.headache.database.entity.Headache;
 
 public class MainActivity extends AppCompatActivity {
@@ -48,15 +47,14 @@ public class MainActivity extends AppCompatActivity {
     Toolbar toolbar;
     @BindView(R.id.mainLinearLayout)
     LinearLayout mainLinearLayout;
-    @BindView(R.id.dateTime)
-    TextView dateTimeLabel;
-    @BindView(R.id.ratingBar)
-    RatingBar headacheRating;
-    @BindView(R.id.progressBar)
-    ProgressBar progressBarOfHeadacheDatabase;
+//    @BindView(R.id.ratingBar)
+//    RatingBar headacheRating;
+//    @BindView(R.id.progressBar)
+//    ProgressBar progressBarOfHeadacheDatabase;
 
-    private List<Headache> headaches;
+    private List<Headache> headaches = new ArrayList<>();
     private Calendar selectedDate;
+    private MainAdapter mainAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,17 +68,18 @@ public class MainActivity extends AppCompatActivity {
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         headacheRecyclerView.setLayoutManager(layoutManager);
+        headacheRecyclerView.setHasFixedSize(true);
         headacheRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
         getDatabase();
-        ratingBarListener();
+//        ratingBarListener();
 
     }
 
     private void updateDateTimeLabel(Date date) {
         @SuppressLint("SimpleDateFormat")
         SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMM HH:mm");
-        dateTimeLabel.setText(dateFormatter.format(date));
+//        dateTimeLabel.setText(dateFormatter.format(date));
         Toast.makeText(this, R.string.toast_date_time_label_updated, Toast.LENGTH_SHORT).show();
     }
 
@@ -99,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.set_current_date_time_menu:
                 selectedDate.setTime(new Date());
                 updateDateTimeLabel(selectedDate.getTime());
@@ -117,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
     private void showDateEditor() {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         LayoutInflater inflater = getLayoutInflater();
-        @SuppressLint("InflateParams") final View layout = inflater.inflate(R.layout.date_changer, null);
+        @SuppressLint("InflateParams") final View layout = inflater.inflate(R.layout.dialog_date_changer, null);
         final DatePicker datePicker = layout.findViewById(R.id.datePicker);
         builder.setView(layout);
         builder.setPositiveButton(R.string.dialog_positive_button, new DialogInterface.OnClickListener() {
@@ -147,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
     private void showTimeEditor() {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         LayoutInflater inflater = getLayoutInflater();
-        @SuppressLint("InflateParams") final View layout = inflater.inflate(R.layout.time_changer, null);
+        @SuppressLint("InflateParams") final View layout = inflater.inflate(R.layout.dialog_time_changer, null);
         final TimePicker timePicker = layout.findViewById(R.id.timePicker);
         timePicker.setIs24HourView(true);
         builder.setView(layout);
@@ -181,27 +180,34 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 headaches = App.getInstance().getDatabase().headacheDao().getHeadaches();
-                if (!headaches.isEmpty())
+                if (!headaches.isEmpty()) {
                     for (Headache ha : headaches)
                         Log.e(TAG, "Headache " + ha.getRating() + " on " + ha.getDate());
+                    setViewAdapter(headaches);
+                }
             }
         }).start();
     }
 
+    private void setViewAdapter(List<Headache> headaches) {
+        mainAdapter = new MainAdapter(headaches, getApplicationContext());
+        headacheRecyclerView.setAdapter(mainAdapter);
+    }
+
     private void ratingBarListener() {
-        headacheRating.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
-            @Override
-            public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
-                if (headacheRating.getRating() != 0f) {
-                    progressBarOfHeadacheDatabase.setVisibility(View.VISIBLE);
-                    final Headache headache = new Headache();
-                    headache.setDate(selectedDate.getTime());
-                    headache.setRating(ratingBar.getRating());
-                    showHeadacheInformation(headache);
-                } else
-                    progressBarOfHeadacheDatabase.setVisibility(View.INVISIBLE);
-            }
-        });
+//        headacheRating.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+//            @Override
+//            public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+//                if (headacheRating.getRating() != 0f) {
+//                    progressBarOfHeadacheDatabase.setVisibility(View.VISIBLE);
+//                    final Headache headache = new Headache();
+//                    headache.setDate(selectedDate.getTime());
+//                    headache.setRating(ratingBar.getRating());
+//                    showHeadacheInformation(headache);
+//                } else
+//                    progressBarOfHeadacheDatabase.setVisibility(View.INVISIBLE);
+//            }
+//        });
     }
 
     private void showHeadacheInformation(final Headache headache) {
@@ -209,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
         snackbar.setAction(R.string.headache_cancel_btn, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                headacheRating.setRating(0f);
+//                headacheRating.setRating(0f);
             }
         });
         snackbar.addCallback(new Snackbar.Callback() {
@@ -230,8 +236,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 App.getInstance().getDatabase().headacheDao().insert(headache);
-                progressBarOfHeadacheDatabase.setVisibility(View.INVISIBLE);
-                headacheRating.setRating(0f);
+//                progressBarOfHeadacheDatabase.setVisibility(View.INVISIBLE);
+//                headacheRating.setRating(0f);
             }
         }).start();
     }

@@ -11,13 +11,18 @@ import java.util.List;
 import java.util.Random;
 
 import pl.mzap.headache.R;
-import pl.mzap.headache.adapter.holder.MainViewHolder;
+import pl.mzap.headache.adapter.holder.HeaderViewHolder;
+import pl.mzap.headache.adapter.holder.ItemViewHolder;
 import pl.mzap.headache.database.entity.Headache;
 
-public class MainAdapter extends RecyclerView.Adapter<MainViewHolder> {
+public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+    public static final int TYPE_HEADER = 0;
+    public static final int TYPE_ITEM = 1;
 
     private Context context;
     private List<Headache> headaches;
+    private Random random;
 
     public MainAdapter(List<Headache> headaches, Context context) {
         this.headaches = headaches;
@@ -25,28 +30,42 @@ public class MainAdapter extends RecyclerView.Adapter<MainViewHolder> {
     }
 
     @Override
-    public MainViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.headache_card, parent, false);
-        return new MainViewHolder(itemView);
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if (viewType == TYPE_HEADER) {
+            View headerView = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_headache_header, parent, false);
+            return new HeaderViewHolder(headerView);
+        } else if (viewType == TYPE_ITEM) {
+            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_headache_item, parent, false);
+            return new ItemViewHolder(itemView);
+        }
+        throw new RuntimeException("No match for " + viewType);
     }
 
     @Override
-    public void onBindViewHolder(final MainViewHolder holder, final int position) {
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
         Headache headache = headaches.get(position);
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(headache.getDate());
-        int hour = calendar.get(Calendar.HOUR);
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
         int minute = calendar.get(Calendar.MINUTE);
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-        holder.date_label.setText(String.valueOf(day + " " + month));
-        holder.time_label.setText(String.valueOf(hour + ":" + minute));
-        holder.ratingBar.setRating(headache.getRating());
+        if (holder instanceof HeaderViewHolder) {
+            ((HeaderViewHolder) holder).dateTime.setText("Header sample text setted by viewholder");
+        } else if (holder instanceof ItemViewHolder) {
+            ((ItemViewHolder) holder).dateLabel.setText(String.valueOf(day + "4 " + month));
+            if (minute < 10)
+                ((ItemViewHolder) holder).timeLabel.setText(String.valueOf(hour + ":0" + minute));
+            else
+                ((ItemViewHolder) holder).timeLabel.setText(String.valueOf(hour + ":" + minute));
+            ((ItemViewHolder) holder).ratingBar.setRating(headache.getRating());
 
-        int randomColorNumber = new Random().nextInt();
-        setColor(holder, randomColorNumber);
+            random = new Random();
+            int randomColorNumber = random.nextInt(9 - 1 + 1) + 1;
+            setColor(((ItemViewHolder) holder), randomColorNumber);
+        }
     }
 
     @Override
@@ -54,7 +73,19 @@ public class MainAdapter extends RecyclerView.Adapter<MainViewHolder> {
         return headaches.size();
     }
 
-    private void setColor(MainViewHolder holder, int colorCode) {
+    @Override
+    public int getItemViewType(int position) {
+        if (isPositionHeader(position))
+            return TYPE_HEADER;
+        else
+            return TYPE_ITEM;
+    }
+
+    private boolean isPositionHeader(int position) {
+        return position == 0;
+    }
+
+    private void setColor(ItemViewHolder holder, int colorCode) {
         switch (colorCode) {
             case 1:
                 holder.relativeLayout.setBackgroundResource(R.color.card_color_10);

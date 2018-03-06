@@ -4,7 +4,7 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
     <path
-        android:fillColor="#689f38"
+        android:fillColor="#795548"
         android:name="Prostokąt 1"
         android:pathData="m0 0h108v108h-108v-108z" />
 </vector>
