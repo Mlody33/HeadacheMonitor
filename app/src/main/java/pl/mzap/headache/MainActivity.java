@@ -12,7 +12,6 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,7 +21,6 @@ import android.widget.LinearLayout;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -47,10 +45,6 @@ public class MainActivity extends AppCompatActivity {
     Toolbar toolbar;
     @BindView(R.id.mainLinearLayout)
     LinearLayout mainLinearLayout;
-//    @BindView(R.id.ratingBar)
-//    RatingBar headacheRating;
-//    @BindView(R.id.progressBar)
-//    ProgressBar progressBarOfHeadacheDatabase;
 
     private List<Headache> headaches = new ArrayList<>();
     private Calendar selectedDate;
@@ -76,18 +70,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void updateDateTimeLabel(Date date) {
-        @SuppressLint("SimpleDateFormat")
-        SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMM HH:mm");
-//        dateTimeLabel.setText(dateFormatter.format(date));
-        Toast.makeText(this, R.string.toast_date_time_label_updated, Toast.LENGTH_SHORT).show();
-    }
-
     @Override
     protected void onResume() {
         super.onResume();
         selectedDate.setTime(new Date());
-        updateDateTimeLabel(selectedDate.getTime());
+//        updateDateTimeLabel(selectedDate.getTime());
     }
 
     @Override
@@ -101,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.set_current_date_time_menu:
                 selectedDate.setTime(new Date());
-                updateDateTimeLabel(selectedDate.getTime());
+//                updateDateTimeLabel(selectedDate.getTime());
                 break;
             case R.id.set_date:
                 showDateEditor();
@@ -130,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
                 int currentMinute = selectedDate.get(Calendar.MINUTE);
 
                 selectedDate.set(selectedYear, selectedMonth, selectedDay, currentHour, currentMinute);
-                updateDateTimeLabel(selectedDate.getTime());
+//                updateDateTimeLabel(selectedDate.getTime());
             }
         });
         builder.setNegativeButton(R.string.dialog_negative_button, new DialogInterface.OnClickListener() {
@@ -162,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
                 int selectedMinute = timePicker.getMinute();
 
                 selectedDate.set(currentYear, currentMonth, currentDay, selectedHour, selectedMinute);
-                updateDateTimeLabel(selectedDate.getTime());
+//                updateDateTimeLabel(selectedDate.getTime());
             }
         });
         builder.setNegativeButton(R.string.dialog_negative_button, new DialogInterface.OnClickListener() {
@@ -180,11 +167,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 headaches = App.getInstance().getDatabase().headacheDao().getHeadaches();
-                if (!headaches.isEmpty()) {
-                    for (Headache ha : headaches)
-                        Log.e(TAG, "Headache " + ha.getRating() + " on " + ha.getDate());
+                if (!headaches.isEmpty())
                     setViewAdapter(headaches);
-                }
             }
         }).start();
     }
