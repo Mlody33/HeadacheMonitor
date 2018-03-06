@@ -13,7 +13,7 @@ import pl.mzap.headache.database.entity.Headache;
 @Dao
 public interface HeadacheDao {
 
-    @Query("SELECT * FROM Headache")
+    @Query("SELECT * FROM Headache ORDER BY date DESC")
     List<Headache> getHeadaches();
 
     @Insert

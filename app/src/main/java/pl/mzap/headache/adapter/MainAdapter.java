@@ -53,17 +53,12 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         if (holder instanceof HeaderViewHolder) {
             ((HeaderViewHolder) holder).dateTime.setText(fullDateFormat.format(new Date()));
-            ((HeaderViewHolder) holder).ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
-                @Override
-                public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
-                    Toast.makeText(context, "Rating bar changed", Toast.LENGTH_SHORT).show();
-                }
-            });
         } else if (holder instanceof ItemViewHolder) {
             ((ItemViewHolder) holder).dateLabel.setText(shortDateFormat.format(headache.getDate()));
             ((ItemViewHolder) holder).timeLabel.setText(timeFormat.format(headache.getDate()));
             ((ItemViewHolder) holder).ratingBar.setRating(headache.getRating());
         }
+
     }
 
     @Override
@@ -89,9 +84,12 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void addItem(Headache headache) {
-        int position = headaches.size();
-        headaches.add(headache);
-        notifyItemInserted(position);
+        headaches.add(1, headache);
+        notifyItemInserted(1);
+    }
+
+    public void updateHeader(){
+        notifyItemChanged(0);
     }
 
 }

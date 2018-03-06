@@ -18,6 +18,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.RatingBar;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -28,6 +30,8 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import pl.mzap.headache.ClickListener.ClickListener;
+import pl.mzap.headache.ClickListener.RecyclerTouchListener;
 import pl.mzap.headache.adapter.MainAdapter;
 import pl.mzap.headache.database.entity.Headache;
 
@@ -50,6 +54,9 @@ public class MainActivity extends AppCompatActivity {
     private Calendar selectedDate;
     private MainAdapter mainAdapter;
 
+    private RatingBar ratingBar;
+    private ProgressBar progressBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,8 +72,8 @@ public class MainActivity extends AppCompatActivity {
         headacheRecyclerView.setHasFixedSize(true);
         headacheRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        getDatabase();
-//        ratingBarListener();
+        getHeadachesFromDatabase();
+        headacheRecyclerViewOnClickListener();
 
     }
 
@@ -98,6 +105,46 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
         return true;
+    }
+
+    private void getHeadachesFromDatabase() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                headaches = App.getInstance().getDatabase().headacheDao().getHeadaches();
+                if (!headaches.isEmpty())
+                    setViewAdapter(headaches);
+            }
+        }).start();
+    }
+
+    private void headacheRecyclerViewOnClickListener() {
+        headacheRecyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), headacheRecyclerView, new ClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+                ratingBar = view.findViewById(R.id.rating_bar_header);
+                progressBar = view.findViewById(R.id.progress_bar_header);
+                ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+                    @Override
+                    public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+                        if (ratingBar.getRating() != 0f) {
+                            progressBar.setVisibility(View.VISIBLE);
+                            final Headache headache = new Headache();
+                            headache.setDate(selectedDate.getTime());
+                            headache.setDate(new Date());
+                            headache.setRating(ratingBar.getRating());
+                            showHeadacheInformation(headache);
+                        } else
+                            progressBar.setVisibility(View.INVISIBLE);
+                    }
+                });
+            }
+
+            @Override
+            public void onLongClick(View view, int position) {
+
+            }
+        }));
     }
 
     private void showDateEditor() {
@@ -162,44 +209,17 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    private void getDatabase() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                headaches = App.getInstance().getDatabase().headacheDao().getHeadaches();
-                if (!headaches.isEmpty())
-                    setViewAdapter(headaches);
-            }
-        }).start();
-    }
-
     private void setViewAdapter(List<Headache> headaches) {
         mainAdapter = new MainAdapter(headaches, getApplicationContext());
         headacheRecyclerView.setAdapter(mainAdapter);
     }
 
-    private void ratingBarListener() {
-//        headacheRating.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
-//            @Override
-//            public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
-//                if (headacheRating.getRating() != 0f) {
-//                    progressBarOfHeadacheDatabase.setVisibility(View.VISIBLE);
-//                    final Headache headache = new Headache();
-//                    headache.setDate(selectedDate.getTime());
-//                    headache.setRating(ratingBar.getRating());
-//                    showHeadacheInformation(headache);
-//                } else
-//                    progressBarOfHeadacheDatabase.setVisibility(View.INVISIBLE);
-//            }
-//        });
-    }
-
-    private void showHeadacheInformation(final Headache headache) {
+    public void showHeadacheInformation(final Headache headache) {
         Snackbar snackbar = Snackbar.make(mainLinearLayout, R.string.headache_adding, Snackbar.LENGTH_SHORT);
         snackbar.setAction(R.string.headache_cancel_btn, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                headacheRating.setRating(0f);
+                ratingBar.setRating(0f);
             }
         });
         snackbar.addCallback(new Snackbar.Callback() {
@@ -220,8 +240,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 App.getInstance().getDatabase().headacheDao().insert(headache);
-//                progressBarOfHeadacheDatabase.setVisibility(View.INVISIBLE);
-//                headacheRating.setRating(0f);
+                progressBar.setVisibility(View.INVISIBLE);
+                ratingBar.setRating(0f);
+                mainAdapter.addItem(headache);
             }
         }).start();
     }
