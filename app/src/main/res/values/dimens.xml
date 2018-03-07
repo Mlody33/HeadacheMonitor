@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="date_time_text_size">36sp</dimen>
+    <dimen name="date_header_text_size">46sp</dimen>
+    <dimen name="time_header_text_size">32sp</dimen>
     <dimen name="primary_text_size">16sp</dimen>
     <dimen name="card_margin">5dp</dimen>
     <dimen name="card_radius">2dp</dimen>

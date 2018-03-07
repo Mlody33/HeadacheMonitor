@@ -26,7 +26,7 @@
         android:id="@+id/headache_row_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/divider"
+        android:background="@color/item_row"
         android:orientation="horizontal"
         android:padding="15dp">
 
@@ -35,7 +35,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Wt, 27 Lut"
-            android:textColor="@color/primaryText"
+            android:textColor="@color/primary_text"
             android:layout_alignParentTop="true"
             android:textSize="@dimen/card_date_text_size" />
 

@@ -43,14 +43,14 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
         Headache headache = headaches.get(position);
 
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat fullDateFormat = new SimpleDateFormat("E, dd MMM HH:mm");
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat shortDateFormat = new SimpleDateFormat("E, dd MMM");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("E, dd MMM");
         @SuppressLint("SimpleDateFormat") SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
 
         if (holder instanceof HeaderViewHolder) {
-            ((HeaderViewHolder) holder).dateTime.setText(fullDateFormat.format(new Date()));
+            ((HeaderViewHolder) holder).dateLabel.setText(dateFormat.format(new Date()));
+            ((HeaderViewHolder) holder).timeLabel.setText(timeFormat.format(new Date()));
         } else if (holder instanceof ItemViewHolder) {
-            ((ItemViewHolder) holder).dateLabel.setText(shortDateFormat.format(headache.getDate()));
+            ((ItemViewHolder) holder).dateLabel.setText(dateFormat.format(headache.getDate()));
             ((ItemViewHolder) holder).timeLabel.setText(timeFormat.format(headache.getDate()));
             ((ItemViewHolder) holder).ratingBar.setRating(headache.getRating());
         }

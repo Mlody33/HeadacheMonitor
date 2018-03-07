@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
 
     private RatingBar ratingBar;
     private ProgressBar progressBar;
-    private TextView dateTimeLabel;
+    private TextView dateLabel, timeLabel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,7 +135,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
             public void onClick(View view, int position) {
                 ratingBar = view.findViewById(R.id.rating_bar_header);
                 progressBar = view.findViewById(R.id.progress_bar_header);
-                dateTimeLabel = view.findViewById(R.id.date_time_header_label);
+                dateLabel = view.findViewById(R.id.date_header_label);
+                timeLabel = view.findViewById(R.id.time_header_label);
                 ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
                     @Override
                     public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
@@ -226,8 +227,10 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
     }
 
     private void updateDateTimeLabel(Date date) {
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd MMM HH:mm");
-        dateTimeLabel.setText(dateTimeFormat.format(date));
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("E, dd MMM");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+        dateLabel.setText(dateFormat.format(date));
+        timeLabel.setText(timeFormat.format(date));
     }
 
     public void showHeadacheInformation(final Headache headache) {
