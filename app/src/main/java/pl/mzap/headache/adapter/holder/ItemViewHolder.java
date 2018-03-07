@@ -10,7 +10,8 @@ import pl.mzap.headache.R;
 
 public class ItemViewHolder extends RecyclerView.ViewHolder {
 
-    public RelativeLayout relativeLayout;
+    public RelativeLayout headacheViewForeground;
+    public RelativeLayout headacheViewBackground;
     public TextView dateLabel, timeLabel;
     public RatingBar ratingBar;
 
@@ -20,6 +21,7 @@ public class ItemViewHolder extends RecyclerView.ViewHolder {
         timeLabel = itemView.findViewById(R.id.time_label);
         ratingBar = itemView.findViewById(R.id.rating_bar_header);
 
-        relativeLayout = itemView.findViewById(R.id.headache_card_layout);
+        headacheViewForeground = itemView.findViewById(R.id.headache_row_layout);
+        headacheViewBackground = itemView.findViewById(R.id.headache_view_background);
     }
 }

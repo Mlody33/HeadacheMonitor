@@ -19,4 +19,6 @@
     <string name="set_time">Zmien godzine</string>
 
     <string name="toast_date_time_label_updated">Godzina i data została zmieniona</string>
+    <string name="history_headache_label">Historia</string>
+    <string name="delete_headache">Usun wpis</string>
 </resources>

@@ -1,13 +1,10 @@
 package pl.mzap.headache.adapter;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RatingBar;
-import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -22,13 +19,12 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final int TYPE_HEADER = 0;
     private static final int TYPE_ITEM = 1;
+    public static final int HEADER_POSITION = 0;
 
-    private Context context;
     private List<Headache> headaches;
 
-    public MainAdapter(List<Headache> headaches, Context context) {
+    public MainAdapter(List<Headache> headaches) {
         this.headaches = headaches;
-        this.context = context;
     }
 
     @Override
@@ -47,9 +43,9 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
         Headache headache = headaches.get(position);
 
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat shortDateFormat = new SimpleDateFormat("dd MMM");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat fullDateFormat = new SimpleDateFormat("E, dd MMM HH:mm");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat shortDateFormat = new SimpleDateFormat("E, dd MMM");
         @SuppressLint("SimpleDateFormat") SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat fullDateFormat = new SimpleDateFormat("dd MMM HH:mm");
 
         if (holder instanceof HeaderViewHolder) {
             ((HeaderViewHolder) holder).dateTime.setText(fullDateFormat.format(new Date()));
@@ -68,14 +64,14 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemViewType(int position) {
-        if (isPositionHeader(position))
+        if (isHeader(position))
             return TYPE_HEADER;
         else
             return TYPE_ITEM;
     }
 
-    private boolean isPositionHeader(int position) {
-        return position == 0;
+    public boolean isHeader(int position) {
+        return position == HEADER_POSITION;
     }
 
     public void removeItem(int position) {
@@ -84,13 +80,13 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void addItem(Headache headache) {
-        headaches.add(1, headache);
-        notifyItemInserted(1);
+        headaches.add(HEADER_POSITION + 1, headache);
+        notifyItemInserted(HEADER_POSITION + 1);
     }
 
-    public void updateHeader(){
-        notifyItemChanged(0);
+    public void restoreItem(Headache headache, int deletedPosition) {
+        headaches.add(deletedPosition, headache);
+        notifyItemInserted(deletedPosition);
     }
-
 }
 

@@ -5,5 +5,5 @@
     <dimen name="card_margin">5dp</dimen>
     <dimen name="card_radius">2dp</dimen>
     <dimen name="card_time_text_size">22sp</dimen>
-    <dimen name="card_date_text_size">42sp</dimen>
+    <dimen name="card_date_text_size">38sp</dimen>
 </resources>

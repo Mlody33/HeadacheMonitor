@@ -1,4 +1,4 @@
-package pl.mzap.headache.ClickListener;
+package pl.mzap.headache.touch;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;

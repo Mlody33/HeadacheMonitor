@@ -9,9 +9,11 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,9 +22,11 @@ import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -30,12 +34,15 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import pl.mzap.headache.ClickListener.ClickListener;
-import pl.mzap.headache.ClickListener.RecyclerTouchListener;
+import pl.mzap.headache.adapter.holder.ItemViewHolder;
+import pl.mzap.headache.touch.ClickListener;
+import pl.mzap.headache.touch.RecyclerItemTouchHelper;
+import pl.mzap.headache.touch.RecyclerItemTouchHelperListener;
+import pl.mzap.headache.touch.RecyclerTouchListener;
 import pl.mzap.headache.adapter.MainAdapter;
 import pl.mzap.headache.database.entity.Headache;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements RecyclerItemTouchHelperListener {
 
     private static final String TAG = "MAIN_ACTIVITY";
 
@@ -56,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
 
     private RatingBar ratingBar;
     private ProgressBar progressBar;
+    private TextView dateTimeLabel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +79,10 @@ public class MainActivity extends AppCompatActivity {
         headacheRecyclerView.setLayoutManager(layoutManager);
         headacheRecyclerView.setHasFixedSize(true);
         headacheRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        headacheRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+
+        ItemTouchHelper.SimpleCallback itemToucheHelperCallback = new RecyclerItemTouchHelper(0, ItemTouchHelper.LEFT, this);
+        new ItemTouchHelper(itemToucheHelperCallback).attachToRecyclerView(headacheRecyclerView);
 
         getHeadachesFromDatabase();
         headacheRecyclerViewOnClickListener();
@@ -95,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.set_current_date_time_menu:
                 selectedDate.setTime(new Date());
-//                updateDateTimeLabel(selectedDate.getTime());
+                updateDateTimeLabel(selectedDate.getTime());
                 break;
             case R.id.set_date:
                 showDateEditor();
@@ -112,8 +124,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 headaches = App.getInstance().getDatabase().headacheDao().getHeadaches();
-                if (!headaches.isEmpty())
-                    setViewAdapter(headaches);
+                setViewAdapter(headaches);
             }
         }).start();
     }
@@ -124,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view, int position) {
                 ratingBar = view.findViewById(R.id.rating_bar_header);
                 progressBar = view.findViewById(R.id.progress_bar_header);
+                dateTimeLabel = view.findViewById(R.id.date_time_header_label);
                 ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
                     @Override
                     public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
@@ -131,7 +143,6 @@ public class MainActivity extends AppCompatActivity {
                             progressBar.setVisibility(View.VISIBLE);
                             final Headache headache = new Headache();
                             headache.setDate(selectedDate.getTime());
-                            headache.setDate(new Date());
                             headache.setRating(ratingBar.getRating());
                             showHeadacheInformation(headache);
                         } else
@@ -164,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
                 int currentMinute = selectedDate.get(Calendar.MINUTE);
 
                 selectedDate.set(selectedYear, selectedMonth, selectedDay, currentHour, currentMinute);
-//                updateDateTimeLabel(selectedDate.getTime());
+                updateDateTimeLabel(selectedDate.getTime());
             }
         });
         builder.setNegativeButton(R.string.dialog_negative_button, new DialogInterface.OnClickListener() {
@@ -185,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
         timePicker.setIs24HourView(true);
         builder.setView(layout);
         builder.setPositiveButton(R.string.dialog_positive_button, new DialogInterface.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.M) //TODO Works only with Marshmallow API
+            @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 int currentDay = selectedDate.get(Calendar.DAY_OF_MONTH);
@@ -196,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
                 int selectedMinute = timePicker.getMinute();
 
                 selectedDate.set(currentYear, currentMonth, currentDay, selectedHour, selectedMinute);
-//                updateDateTimeLabel(selectedDate.getTime());
+                updateDateTimeLabel(selectedDate.getTime());
             }
         });
         builder.setNegativeButton(R.string.dialog_negative_button, new DialogInterface.OnClickListener() {
@@ -210,8 +221,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setViewAdapter(List<Headache> headaches) {
-        mainAdapter = new MainAdapter(headaches, getApplicationContext());
+        mainAdapter = new MainAdapter(headaches);
         headacheRecyclerView.setAdapter(mainAdapter);
+    }
+
+    private void updateDateTimeLabel(Date date) {
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd MMM HH:mm");
+        dateTimeLabel.setText(dateTimeFormat.format(date));
     }
 
     public void showHeadacheInformation(final Headache headache) {
@@ -241,10 +257,47 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 App.getInstance().getDatabase().headacheDao().insert(headache);
                 progressBar.setVisibility(View.INVISIBLE);
-                ratingBar.setRating(0f);
                 mainAdapter.addItem(headache);
+                ratingBar.setRating(0f);
+                selectedDate.setTime(new Date());
             }
         }).start();
     }
 
+    private void deleteHeadache(final Headache headache) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                App.getInstance().getDatabase().headacheDao().delete(headache);
+            }
+        }).start();
+    }
+
+    @Override
+    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, final int position) {
+        if (viewHolder instanceof ItemViewHolder) {
+
+            final Headache headache = headaches.get(viewHolder.getAdapterPosition());
+            final int deletedPosition = viewHolder.getAdapterPosition();
+
+            mainAdapter.removeItem(viewHolder.getAdapterPosition());
+
+            Snackbar snackbar = Snackbar.make(mainLinearLayout, "Item remvoed", Snackbar.LENGTH_LONG);
+            snackbar.setAction("Anuluj", new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mainAdapter.restoreItem(headache, deletedPosition);
+                }
+            });
+            snackbar.setActionTextColor(getResources().getColor(R.color.accent));
+            snackbar.addCallback(new Snackbar.Callback() {
+                @Override
+                public void onDismissed(Snackbar snackbar, int event) {
+                    if (event == SELF_DISAPPEARANCE | event == ACTIVITY_FINISHED | event == NEW_ONE_APPEARS)
+                        deleteHeadache(headache);
+                }
+            });
+            snackbar.show();
+        }
+    }
 }
