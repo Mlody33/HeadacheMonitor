@@ -4,7 +4,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -50,9 +52,18 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (holder instanceof HeaderViewHolder) {
             ((HeaderViewHolder) holder).dateLabel.setText(App.getInstance().getDateFormat().format(new Date()));
             ((HeaderViewHolder) holder).timeLabel.setText(App.getInstance().getTimeFormat().format(new Date()));
+            List<ImageButton> ratingButtons = new ArrayList<ImageButton>() {
+                {
+                    add(((HeaderViewHolder) holder).ratingBtn1);
+                    add(((HeaderViewHolder) holder).ratingBtn2);
+                    add(((HeaderViewHolder) holder).ratingBtn3);
+                    add(((HeaderViewHolder) holder).ratingBtn4);
+                }
+            };
+
             main.initializeHeaderLabels(((HeaderViewHolder) holder).dateLabel, ((HeaderViewHolder) holder).timeLabel);
-            main.initializeRatingBar(((HeaderViewHolder) holder).ratingBar);
             main.initializeProgressBar(((HeaderViewHolder) holder).progressBar);
+            main.initializeRatingButtons(ratingButtons);
         } else if (holder instanceof ItemViewHolder) {
             ((ItemViewHolder) holder).dateLabel.setText(App.getInstance().getDateFormat().format(headache.getDate()));
             ((ItemViewHolder) holder).timeLabel.setText(App.getInstance().getTimeFormat().format(headache.getDate()));

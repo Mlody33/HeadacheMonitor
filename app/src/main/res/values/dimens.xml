@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="date_header_text_size">46sp</dimen>
-    <dimen name="time_header_text_size">32sp</dimen>
+    <dimen name="header_text_label_size">46sp</dimen>
+    <dimen name="header_time_label_size">32sp</dimen>
     <dimen name="primary_text_size">16sp</dimen>
-    <dimen name="card_margin">5dp</dimen>
-    <dimen name="card_radius">2dp</dimen>
-    <dimen name="card_time_text_size">22sp</dimen>
-    <dimen name="card_date_text_size">38sp</dimen>
+    <dimen name="item_time_label_size">22sp</dimen>
+    <dimen name="item_date_label_size">38sp</dimen>
+
+    <dimen name="rating_btn_layout_margin_horizontal">30dp</dimen>
+    <dimen name="rating_btn_layout_margin_top">10dp</dimen>
 </resources>

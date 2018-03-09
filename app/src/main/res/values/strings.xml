@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Headache</string>
 
-    <string name="main_headache_label">Zaznacz w skali od 1–5 natężenie bólu</string>
+    <string name="main_headache_label">Zaznacz w skali od 1–4 natężenie bólu</string>
 
     <string name="dialog_positive_button">Potwierdz</string>
     <string name="dialog_negative_button">Anuluj</string>
@@ -20,4 +20,9 @@
     <string name="item_remove_headache">Usun wpis</string>
     <string name="item_headache_removed">Wpis został usunięty</string>
     <string name="all_headaches_updated">Odświezono wpisy</string>
+    <string name="all_date_updated">Odświeżono date i godzine</string>
+    <string name="headache_scale_1">Headache scale 1</string>
+    <string name="headache_scale_2">Headache scale 2</string>
+    <string name="headache_scale_3">Headache scale 3</string>
+    <string name="headache_scale_4">Headache scale 4</string>
 </resources>

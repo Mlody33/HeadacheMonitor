@@ -22,9 +22,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
     private Calendar selectedDate;
     private MainAdapter mainAdapter;
 
-    private RatingBar ratingBar;
+    private ImageButton ratingBtn1, ratingBtn2, ratingBtn3, ratingBtn4;
     private ProgressBar progressBar;
     private TextView dateLabel, timeLabel;
     private boolean isLabelsInitialized = false;
@@ -124,7 +124,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, final int position) {
         if (viewHolder instanceof ItemViewHolder) {
-
             final Headache headache = headaches.get(viewHolder.getAdapterPosition());
             final int deletedPosition = viewHolder.getAdapterPosition();
 
@@ -159,20 +158,26 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
         new ItemTouchHelper(itemToucheHelperCallback).attachToRecyclerView(headacheRecyclerView);
     }
 
-    private void ratingBarChangeListener() {
-        ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
-            @Override
-            public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
-                if (ratingBar.getRating() != 0f) {
+    private void ratingButtonsOnClickListener(List<ImageButton> ratingButtons) {
+        final Headache headache = new Headache();
+        headache.setDate(selectedDate.getTime());
+        for (final ImageButton rating : ratingButtons) {
+            rating.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
                     progressBar.setVisibility(View.VISIBLE);
-                    final Headache headache = new Headache();
-                    headache.setDate(selectedDate.getTime());
-                    headache.setRating(ratingBar.getRating());
+                    if (rating.getId() == ratingBtn1.getId())
+                        headache.setRating(1f);
+                    if (rating.getId() == ratingBtn2.getId())
+                        headache.setRating(2f);
+                    if (rating.getId() == ratingBtn3.getId())
+                        headache.setRating(3f);
+                    if (rating.getId() == ratingBtn4.getId())
+                        headache.setRating(4f);
                     showHeadacheAddingInformation(headache);
-                } else
-                    progressBar.setVisibility(View.INVISIBLE);
-            }
-        });
+                }
+            });
+        }
     }
 
     private void refreshSwipeOnRefreshingListener() {
@@ -281,6 +286,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
         selectedDate.setTime(date);
         dateLabel.setText(App.getInstance().getDateFormat().format(date));
         timeLabel.setText(App.getInstance().getTimeFormat().format(date));
+        Toast.makeText(this, R.string.all_date_updated, Toast.LENGTH_SHORT).show();
     }
 
     public void showHeadacheAddingInformation(final Headache headache) {
@@ -288,7 +294,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
         snackbar.setAction(R.string.all_cancel_btn, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ratingBar.setRating(0f);
+                progressBar.setVisibility(View.INVISIBLE);
             }
         });
         snackbar.addCallback(new Snackbar.Callback() {
@@ -338,7 +344,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
                 App.getInstance().getDatabase().headacheDao().insert(headache);
                 progressBar.setVisibility(View.INVISIBLE);
                 mainAdapter.addItem(headache);
-                ratingBar.setRating(0f);
                 selectedDate.setTime(new Date());
             }
         }).start();
@@ -353,9 +358,12 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
         }).start();
     }
 
-    public void initializeRatingBar(RatingBar ratingBar) {
-        this.ratingBar = ratingBar;
-        ratingBarChangeListener();
+    public void initializeRatingButtons(List<ImageButton> ratingButtons) {
+        ratingBtn1 = ratingButtons.get(0);
+        ratingBtn2 = ratingButtons.get(1);
+        ratingBtn3 = ratingButtons.get(2);
+        ratingBtn4 = ratingButtons.get(3);
+        ratingButtonsOnClickListener(ratingButtons);
     }
 
     public void initializeProgressBar(ProgressBar progressBar) {
