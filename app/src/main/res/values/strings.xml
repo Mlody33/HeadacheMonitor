@@ -10,9 +10,10 @@
     <string name="all_headache_added">Zapisano poprawnie!</string>
     <string name="all_cancel_btn">ANULUJ</string>
 
-    <string name="set_current_date_time">Ustaw aktualny czas</string>
-    <string name="set_date">Zmień date</string>
-    <string name="set_time">Zmien godzine</string>
+    <string name="menu_set_current_date_time">Ustaw aktualny czas</string>
+    <string name="menu_set_date">Zmień date</string>
+    <string name="menu_set_time">Zmien godzine</string>
+    <string name="menu_refresh_history">Odśwież dane</string>
 
     <string name="toast_date_time_label_updated">Godzina i data została zmieniona</string>
     <string name="history_headache_label">Historia</string>

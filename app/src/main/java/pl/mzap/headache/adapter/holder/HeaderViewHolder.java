@@ -6,21 +6,26 @@ import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import pl.mzap.headache.R;
 
 public class HeaderViewHolder extends RecyclerView.ViewHolder {
 
-    public TextView dateLabel, timeLabel, introductionHeadacheRating;
+    @BindView(R.id.rating_bar_header)
     public RatingBar ratingBar;
+    @BindView(R.id.progress_bar_header)
     public ProgressBar progressBar;
+    @BindView(R.id.date_header_label)
+    public TextView dateLabel;
+    @BindView(R.id.time_header_label)
+    public TextView timeLabel;
+    @BindView(R.id.intro_header_rating_bar)
+    public TextView introductionHeadacheRating;
 
     public HeaderViewHolder(View itemView) {
         super(itemView);
-        dateLabel = itemView.findViewById(R.id.date_header_label);
-        timeLabel = itemView.findViewById(R.id.time_header_label);
-        introductionHeadacheRating = itemView.findViewById(R.id.intro_header_rating_bar);
-        ratingBar = itemView.findViewById(R.id.rating_bar_header);
-        progressBar = itemView.findViewById(R.id.progress_bar_header);
+        ButterKnife.bind(this, itemView);
     }
 
 }

@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -14,6 +15,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -54,6 +56,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
     RecyclerView headacheRecyclerView;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+    @BindView(R.id.swipeRefresh)
+    SwipeRefreshLayout refreshLayout;
     @BindView(R.id.mainLinearLayout)
     LinearLayout mainLinearLayout;
 
@@ -75,9 +79,12 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
         selectedDate = Calendar.getInstance();
         selectedDate.setTime(new Date());
 
+        if (getHeadachesHistory())
+            setViewAdapter(headaches);
+
         headacheRecyclerViewInitializer();
         headacheRecyclerViewOnClickListener();
-        getHeadachesFromDatabase();
+        refreshSwipeOnRefreshingListener();
 
     }
 
@@ -98,15 +105,17 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.set_current_date_time_menu:
-                selectedDate.setTime(new Date());
-                updateDateTimeLabel(selectedDate.getTime());
+            case R.id.menu_set_current_date_time:
+                updateDateTimeLabel(new Date());
                 break;
-            case R.id.set_date:
+            case R.id.menu_set_date:
                 showDateEditor();
                 break;
-            case R.id.set_time:
+            case R.id.menu_set_time:
                 showTimeEditor();
+                break;
+            case R.id.menu_refresh:
+
                 break;
         }
         return true;
@@ -172,6 +181,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
                     }
                 });
             }
+
             @Override
             public void onLongClick(View view, int position) {
 
@@ -179,14 +189,35 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
         }));
     }
 
-    private void getHeadachesFromDatabase() {
-        new Thread(new Runnable() {
+    private void refreshSwipeOnRefreshingListener() {
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getHeadachesHistory();
+                mainAdapter.updateItems(headaches);
+                refreshLayout.setRefreshing(false);
+            }
+        });
+    }
+
+    private boolean getHeadachesHistory() {
+        Thread databaseThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 headaches = App.getInstance().getDatabase().headacheDao().getHeadaches();
-                setViewAdapter(headaches);
             }
-        }).start();
+        });
+        databaseThread.start();
+        try {
+            databaseThread.join();
+            return true;
+        } catch (InterruptedException e) {
+            String error_msg = "Can't get headaches history from local database";
+            Toast.makeText(this, error_msg, Toast.LENGTH_LONG).show();
+            Log.e(TAG, error_msg);
+            return false;
+        }
+
     }
 
     private void showDateEditor() {
@@ -263,6 +294,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
     private void updateDateTimeLabel(Date date) {
         @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("E, dd MMM");
         @SuppressLint("SimpleDateFormat") SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+        selectedDate.setTime(date);
         dateLabel.setText(dateFormat.format(date));
         timeLabel.setText(timeFormat.format(date));
     }

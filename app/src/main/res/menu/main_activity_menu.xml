@@ -2,19 +2,24 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/set_current_date_time_menu"
+        android:id="@+id/menu_set_current_date_time"
         android:icon="@drawable/set_current_date"
-        android:title="@string/set_current_date_time"
+        android:title="@string/menu_set_current_date_time"
         app:showAsAction="always" />
     <item
-        android:id="@+id/set_date"
+        android:id="@+id/menu_set_date"
         android:icon="@drawable/set_date"
-        android:title="@string/set_date"
+        android:title="@string/menu_set_date"
         app:showAsAction="ifRoom" />
     <item
-        android:id="@+id/set_time"
-        android:layout_height="wrap_content"
+        android:id="@+id/menu_set_time"
         android:icon="@drawable/set_time"
-        android:title="@string/set_time"
+        android:title="@string/menu_set_time"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/menu_refresh"
+        android:icon="@drawable/menu_refresh_history"
+        android:title="@string/menu_refresh_history"
+        app:showAsAction="ifRoom" />
+
 </menu>

@@ -70,7 +70,7 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             return TYPE_ITEM;
     }
 
-    public boolean isHeader(int position) {
+    private boolean isHeader(int position) {
         return position == HEADER_POSITION;
     }
 
@@ -87,6 +87,11 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void restoreItem(Headache headache, int deletedPosition) {
         headaches.add(deletedPosition, headache);
         notifyItemInserted(deletedPosition);
+    }
+
+    public void updateItems(List<Headache> headaches){
+        this.headaches = headaches;
+        notifyDataSetChanged();
     }
 }
 

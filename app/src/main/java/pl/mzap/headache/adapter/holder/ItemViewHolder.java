@@ -6,22 +6,25 @@ import android.widget.RatingBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import pl.mzap.headache.R;
 
 public class ItemViewHolder extends RecyclerView.ViewHolder {
 
+    @BindView(R.id.headache_view_background)
     public RelativeLayout headacheViewForeground;
+    @BindView(R.id.headache_row_layout)
     public RelativeLayout headacheViewBackground;
-    public TextView dateLabel, timeLabel;
+    @BindView(R.id.date_label)
+    public TextView dateLabel;
+    @BindView(R.id.time_label)
+    public TextView timeLabel;
+    @BindView(R.id.rating_bar_header)
     public RatingBar ratingBar;
 
     public ItemViewHolder(View itemView) {
         super(itemView);
-        dateLabel = itemView.findViewById(R.id.date_label);
-        timeLabel = itemView.findViewById(R.id.time_label);
-        ratingBar = itemView.findViewById(R.id.rating_bar_header);
-
-        headacheViewForeground = itemView.findViewById(R.id.headache_row_layout);
-        headacheViewBackground = itemView.findViewById(R.id.headache_view_background);
+        ButterKnife.bind(this, itemView);
     }
 }
