@@ -13,9 +13,9 @@ import pl.mzap.headache.R;
 public class ItemViewHolder extends RecyclerView.ViewHolder {
 
     @BindView(R.id.headache_view_background)
-    public RelativeLayout headacheViewForeground;
-    @BindView(R.id.headache_row_layout)
     public RelativeLayout headacheViewBackground;
+    @BindView(R.id.headache_row_layout)
+    public RelativeLayout headacheViewForeground;
     @BindView(R.id.date_label)
     public TextView dateLabel;
     @BindView(R.id.time_label)
