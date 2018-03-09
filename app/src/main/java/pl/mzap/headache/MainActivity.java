@@ -29,7 +29,6 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -89,9 +88,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
     @Override
     protected void onResume() {
         super.onResume();
-        selectedDate.setTime(new Date());
         if (isLabelsInitialized)
-            updateDateTimeLabel(selectedDate.getTime());
+            updateDateTimeLabel(new Date());
     }
 
     @SuppressLint("RestrictedApi")
@@ -219,20 +217,17 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
         LayoutInflater inflater = getLayoutInflater();
         @SuppressLint("InflateParams") final View layout = inflater.inflate(R.layout.view_date_changer, null);
         final DatePicker datePicker = layout.findViewById(R.id.datePicker);
-        datePicker.updateDate(selectedDate.get(Calendar.YEAR), selectedDate.get(Calendar.MONTH), selectedDate.get(Calendar.DAY_OF_MONTH));
+        datePicker.updateDate(selectedDate.get(Calendar.YEAR), selectedDate.get(Calendar.MONTH),
+                selectedDate.get(Calendar.DAY_OF_MONTH));
         builder.setView(layout);
         builder.setPositiveButton(R.string.dialog_positive_button, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                int selectedDay = datePicker.getDayOfMonth();
-                int selectedMonth = datePicker.getMonth();
-                int selectedYear = datePicker.getYear();
+                Calendar chosenDate = Calendar.getInstance();
+                chosenDate.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth(),
+                        chosenDate.get(Calendar.HOUR_OF_DAY), chosenDate.get(Calendar.MINUTE));
 
-                int currentHour = selectedDate.get(Calendar.HOUR_OF_DAY);
-                int currentMinute = selectedDate.get(Calendar.MINUTE);
-
-                selectedDate.set(selectedYear, selectedMonth, selectedDay, currentHour, currentMinute);
-                updateDateTimeLabel(selectedDate.getTime());
+                updateDateTimeLabel(chosenDate.getTime());
             }
         });
         builder.setNegativeButton(R.string.dialog_negative_button, new DialogInterface.OnClickListener() {
@@ -252,22 +247,19 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
         @SuppressLint("InflateParams") final View layout = inflater.inflate(R.layout.view_time_changer, null);
         final TimePicker timePicker = layout.findViewById(R.id.timePicker);
         timePicker.setIs24HourView(true);
-        timePicker.setHour(selectedDate.get(Calendar.HOUR));
+        timePicker.setHour(selectedDate.get(Calendar.HOUR_OF_DAY));
         timePicker.setMinute(selectedDate.get(Calendar.MINUTE));
         builder.setView(layout);
         builder.setPositiveButton(R.string.dialog_positive_button, new DialogInterface.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                int currentDay = selectedDate.get(Calendar.DAY_OF_MONTH);
-                int currentMonth = selectedDate.get(Calendar.MONTH);
-                int currentYear = selectedDate.get(Calendar.YEAR);
+                Calendar chosenTime = Calendar.getInstance();
+                chosenTime.set(selectedDate.get(Calendar.YEAR), selectedDate.get(Calendar.MONTH),
+                        selectedDate.get(Calendar.DAY_OF_MONTH),
+                        timePicker.getHour(), timePicker.getMinute());
 
-                int selectedHour = timePicker.getHour();
-                int selectedMinute = timePicker.getMinute();
-
-                selectedDate.set(currentYear, currentMonth, currentDay, selectedHour, selectedMinute);
-                updateDateTimeLabel(selectedDate.getTime());
+                updateDateTimeLabel(chosenTime.getTime());
             }
         });
         builder.setNegativeButton(R.string.dialog_negative_button, new DialogInterface.OnClickListener() {

@@ -21,10 +21,8 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
         database = Room.databaseBuilder(getApplicationContext(), HeadacheDatabase.class, "database")
                 .build();
-
         INSTANCE = this;
     }
 
