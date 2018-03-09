@@ -158,11 +158,12 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
         new ItemTouchHelper(itemToucheHelperCallback).attachToRecyclerView(headacheRecyclerView);
     }
 
-    private void ratingButtonsOnClickListener(List<ImageButton> ratingButtons) {
+    private void ratingButtonsOnClickListener(final List<ImageButton> ratingButtons) {
         final Headache headache = new Headache();
         headache.setDate(selectedDate.getTime());
         for (final ImageButton rating : ratingButtons) {
             rating.setOnClickListener(new View.OnClickListener() {
+                @RequiresApi(api = Build.VERSION_CODES.M)
                 @Override
                 public void onClick(View v) {
                     progressBar.setVisibility(View.VISIBLE);
@@ -174,6 +175,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
                         headache.setRating(3f);
                     if (rating.getId() == ratingBtn4.getId())
                         headache.setRating(4f);
+                    rating.setColorFilter(getColor(R.color.accent));
                     showHeadacheAddingInformation(headache);
                 }
             });
@@ -292,9 +294,14 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
     public void showHeadacheAddingInformation(final Headache headache) {
         Snackbar snackbar = Snackbar.make(mainLinearLayout, R.string.all_headache_adding, Snackbar.LENGTH_SHORT);
         snackbar.setAction(R.string.all_cancel_btn, new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onClick(View v) {
                 progressBar.setVisibility(View.INVISIBLE);
+                ratingBtn1.clearColorFilter();
+                ratingBtn2.clearColorFilter();
+                ratingBtn3.clearColorFilter();
+                ratingBtn4.clearColorFilter();
             }
         });
         snackbar.addCallback(new Snackbar.Callback() {
@@ -339,10 +346,15 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
 
     private void insertHeadache(final Headache headache) {
         new Thread(new Runnable() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void run() {
                 App.getInstance().getDatabase().headacheDao().insert(headache);
                 progressBar.setVisibility(View.INVISIBLE);
+                ratingBtn1.clearColorFilter();
+                ratingBtn2.clearColorFilter();
+                ratingBtn3.clearColorFilter();
+                ratingBtn4.clearColorFilter();
                 mainAdapter.addItem(headache);
                 selectedDate.setTime(new Date());
             }

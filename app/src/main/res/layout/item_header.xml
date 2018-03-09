@@ -60,12 +60,12 @@
 
         <ImageButton
             android:id="@+id/rating_btn_1"
+            style="?android:attr/borderlessButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            style="?android:attr/borderlessButtonStyle"
-            app:srcCompat="@drawable/rating_btn_1"
-            android:contentDescription="@string/headache_scale_1" />
+            android:contentDescription="@string/headache_scale_1"
+            app:srcCompat="@drawable/rating_btn_1" />
 
         <ImageButton
             android:id="@+id/rating_btn_2"

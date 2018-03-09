@@ -2,6 +2,7 @@ package pl.mzap.headache.adapter.holder;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -20,8 +21,8 @@ public class ItemViewHolder extends RecyclerView.ViewHolder {
     public TextView dateLabel;
     @BindView(R.id.time_label)
     public TextView timeLabel;
-    @BindView(R.id.rating_bar_header)
-    public RatingBar ratingBar;
+    @BindView(R.id.rating_image)
+    public ImageView ratingImage;
 
     public ItemViewHolder(View itemView) {
         super(itemView);
