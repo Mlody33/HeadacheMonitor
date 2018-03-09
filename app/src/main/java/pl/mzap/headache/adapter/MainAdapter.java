@@ -10,6 +10,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import pl.mzap.headache.App;
+import pl.mzap.headache.MainActivity;
 import pl.mzap.headache.R;
 import pl.mzap.headache.adapter.holder.HeaderViewHolder;
 import pl.mzap.headache.adapter.holder.ItemViewHolder;
@@ -19,12 +21,14 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final int TYPE_HEADER = 0;
     private static final int TYPE_ITEM = 1;
-    public static final int HEADER_POSITION = 0;
+    private static final int HEADER_POSITION = 0;
 
     private List<Headache> headaches;
+    private MainActivity main;
 
-    public MainAdapter(List<Headache> headaches) {
+    public MainAdapter(List<Headache> headaches, MainActivity main) {
         this.headaches = headaches;
+        this.main = main;
     }
 
     @Override
@@ -45,15 +49,15 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
         Headache headache = headaches.get(position);
 
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("E, dd MMM");
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
-
         if (holder instanceof HeaderViewHolder) {
-            ((HeaderViewHolder) holder).dateLabel.setText(dateFormat.format(new Date()));
-            ((HeaderViewHolder) holder).timeLabel.setText(timeFormat.format(new Date()));
+            ((HeaderViewHolder) holder).dateLabel.setText(App.getInstance().getDateFormat().format(new Date()));
+            ((HeaderViewHolder) holder).timeLabel.setText(App.getInstance().getTimeFormat().format(new Date()));
+            main.initializeHeaderLabels(((HeaderViewHolder) holder).dateLabel, ((HeaderViewHolder) holder).timeLabel);
+            main.initializeRatingBar(((HeaderViewHolder) holder).ratingBar);
+            main.initializeProgressBar(((HeaderViewHolder) holder).progressBar);
         } else if (holder instanceof ItemViewHolder) {
-            ((ItemViewHolder) holder).dateLabel.setText(dateFormat.format(headache.getDate()));
-            ((ItemViewHolder) holder).timeLabel.setText(timeFormat.format(headache.getDate()));
+            ((ItemViewHolder) holder).dateLabel.setText(App.getInstance().getDateFormat().format(headache.getDate()));
+            ((ItemViewHolder) holder).timeLabel.setText(App.getInstance().getTimeFormat().format(headache.getDate()));
             ((ItemViewHolder) holder).ratingBar.setRating(headache.getRating());
         }
 
@@ -91,7 +95,7 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         notifyItemInserted(deletedPosition);
     }
 
-    public void updateItems(List<Headache> headaches){
+    public void updateItems(List<Headache> headaches) {
         this.headaches = headaches;
         notifyDataSetChanged();
     }

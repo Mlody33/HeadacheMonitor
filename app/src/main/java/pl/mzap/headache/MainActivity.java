@@ -9,6 +9,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -36,13 +37,11 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import pl.mzap.headache.adapter.MainAdapter;
 import pl.mzap.headache.adapter.holder.ItemViewHolder;
-import pl.mzap.headache.touch.RecyclerTouchListener;
+import pl.mzap.headache.database.entity.Headache;
 import pl.mzap.headache.touch.RecyclerItemTouchHelper;
 import pl.mzap.headache.touch.RecyclerItemTouchHelperListener;
-import pl.mzap.headache.touch.RecyclerTouch;
-import pl.mzap.headache.adapter.MainAdapter;
-import pl.mzap.headache.database.entity.Headache;
 
 public class MainActivity extends AppCompatActivity implements RecyclerItemTouchHelperListener {
 
@@ -68,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
     private RatingBar ratingBar;
     private ProgressBar progressBar;
     private TextView dateLabel, timeLabel;
+    private boolean isLabelsInitialized = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,9 +81,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
 
         if (getHeadachesHistory())
             setViewAdapter(headaches);
-
         headacheRecyclerViewInitializer();
-        headacheRecyclerViewOnClickListener();
         refreshSwipeOnRefreshingListener();
 
     }
@@ -92,12 +90,15 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
     protected void onResume() {
         super.onResume();
         selectedDate.setTime(new Date());
-//        updateDateTimeLabel(selectedDate.getTime());
+        if (isLabelsInitialized)
+            updateDateTimeLabel(selectedDate.getTime());
     }
 
+    @SuppressLint("RestrictedApi")
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_activity_menu, menu);
+        ((MenuBuilder) menu).setOptionalIconsVisible(true);
         return true;
     }
 
@@ -115,7 +116,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
                 showTimeEditor();
                 break;
             case R.id.menu_refresh:
-
+                getHeadachesHistory();
+                updateAdapterList();
                 break;
         }
         return true;
@@ -159,34 +161,20 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
         new ItemTouchHelper(itemToucheHelperCallback).attachToRecyclerView(headacheRecyclerView);
     }
 
-    private void headacheRecyclerViewOnClickListener() {
-        headacheRecyclerView.addOnItemTouchListener(new RecyclerTouch(getApplicationContext(), headacheRecyclerView, new RecyclerTouchListener() {
+    private void ratingBarChangeListener() {
+        ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
-            public void onClick(View view, int position) {
-                ratingBar = view.findViewById(R.id.rating_bar_header);
-                progressBar = view.findViewById(R.id.progress_bar_header);
-                dateLabel = view.findViewById(R.id.date_header_label);
-                timeLabel = view.findViewById(R.id.time_header_label);
-                ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
-                    @Override
-                    public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
-                        if (ratingBar.getRating() != 0f) {
-                            progressBar.setVisibility(View.VISIBLE);
-                            final Headache headache = new Headache();
-                            headache.setDate(selectedDate.getTime());
-                            headache.setRating(ratingBar.getRating());
-                            showHeadacheAddingInformation(headache);
-                        } else
-                            progressBar.setVisibility(View.INVISIBLE);
-                    }
-                });
+            public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+                if (ratingBar.getRating() != 0f) {
+                    progressBar.setVisibility(View.VISIBLE);
+                    final Headache headache = new Headache();
+                    headache.setDate(selectedDate.getTime());
+                    headache.setRating(ratingBar.getRating());
+                    showHeadacheAddingInformation(headache);
+                } else
+                    progressBar.setVisibility(View.INVISIBLE);
             }
-
-            @Override
-            public void onLongClick(View view, int position) {
-
-            }
-        }));
+        });
     }
 
     private void refreshSwipeOnRefreshingListener() {
@@ -194,10 +182,16 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
             @Override
             public void onRefresh() {
                 getHeadachesHistory();
-                mainAdapter.updateItems(headaches);
-                refreshLayout.setRefreshing(false);
+                updateAdapterList();
             }
         });
+    }
+
+    private void updateAdapterList() {
+        refreshLayout.setRefreshing(true);
+        mainAdapter.updateItems(headaches);
+        refreshLayout.setRefreshing(false);
+        Toast.makeText(this, R.string.all_headaches_updated, Toast.LENGTH_SHORT).show();
     }
 
     private boolean getHeadachesHistory() {
@@ -287,16 +281,14 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
     }
 
     private void setViewAdapter(List<Headache> headaches) {
-        mainAdapter = new MainAdapter(headaches);
+        mainAdapter = new MainAdapter(headaches, this);
         headacheRecyclerView.setAdapter(mainAdapter);
     }
 
     private void updateDateTimeLabel(Date date) {
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("E, dd MMM");
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
         selectedDate.setTime(date);
-        dateLabel.setText(dateFormat.format(date));
-        timeLabel.setText(timeFormat.format(date));
+        dateLabel.setText(App.getInstance().getDateFormat().format(date));
+        timeLabel.setText(App.getInstance().getTimeFormat().format(date));
     }
 
     public void showHeadacheAddingInformation(final Headache headache) {
@@ -318,6 +310,33 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
             }
         });
         snackbar.show();
+    }
+
+    public void initializeHeaderLabels(TextView dateLabel, TextView timeLabel) {
+        this.dateLabel = dateLabel;
+        this.timeLabel = timeLabel;
+        isLabelsInitialized = true;
+        dateLabelOnClickListener();
+        timeLabelOnClickListener();
+    }
+
+    private void dateLabelOnClickListener() {
+        dateLabel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDateEditor();
+            }
+        });
+    }
+
+    private void timeLabelOnClickListener() {
+        timeLabel.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
+            @Override
+            public void onClick(View v) {
+                showTimeEditor();
+            }
+        });
     }
 
     private void insertHeadache(final Headache headache) {
@@ -342,4 +361,12 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
         }).start();
     }
 
+    public void initializeRatingBar(RatingBar ratingBar) {
+        this.ratingBar = ratingBar;
+        ratingBarChangeListener();
+    }
+
+    public void initializeProgressBar(ProgressBar progressBar) {
+        this.progressBar = progressBar;
+    }
 }
