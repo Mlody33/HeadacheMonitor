@@ -30,10 +30,10 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == TYPE_HEADER) {
-            View headerView = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_headache_header, parent, false);
+            View headerView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_header, parent, false);
             return new HeaderViewHolder(headerView);
         } else if (viewType == TYPE_ITEM) {
-            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_headache_item, parent, false);
+            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_headache, parent, false);
             return new ItemViewHolder(itemView);
         }
         throw new RuntimeException("No match for " + viewType);

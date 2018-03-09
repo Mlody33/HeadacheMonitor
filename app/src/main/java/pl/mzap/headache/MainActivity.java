@@ -75,17 +75,9 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
         selectedDate = Calendar.getInstance();
         selectedDate.setTime(new Date());
 
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
-        headacheRecyclerView.setLayoutManager(layoutManager);
-        headacheRecyclerView.setHasFixedSize(true);
-        headacheRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        headacheRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
-
-        ItemTouchHelper.SimpleCallback itemToucheHelperCallback = new RecyclerItemTouchHelper(0, ItemTouchHelper.LEFT, this);
-        new ItemTouchHelper(itemToucheHelperCallback).attachToRecyclerView(headacheRecyclerView);
-
-        getHeadachesFromDatabase();
+        headacheRecyclerViewInitializer();
         headacheRecyclerViewOnClickListener();
+        getHeadachesFromDatabase();
 
     }
 
@@ -102,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
         return true;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -119,14 +112,42 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
         return true;
     }
 
-    private void getHeadachesFromDatabase() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                headaches = App.getInstance().getDatabase().headacheDao().getHeadaches();
-                setViewAdapter(headaches);
-            }
-        }).start();
+    @Override
+    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, final int position) {
+        if (viewHolder instanceof ItemViewHolder) {
+
+            final Headache headache = headaches.get(viewHolder.getAdapterPosition());
+            final int deletedPosition = viewHolder.getAdapterPosition();
+
+            mainAdapter.removeItem(viewHolder.getAdapterPosition());
+
+            Snackbar snackbar = Snackbar.make(mainLinearLayout, R.string.item_headache_removed, Snackbar.LENGTH_LONG);
+            snackbar.setAction(R.string.all_cancel_btn, new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mainAdapter.restoreItem(headache, deletedPosition);
+                }
+            });
+            snackbar.setActionTextColor(getResources().getColor(R.color.accent));
+            snackbar.addCallback(new Snackbar.Callback() {
+                @Override
+                public void onDismissed(Snackbar snackbar, int event) {
+                    if (event == SELF_DISAPPEARANCE | event == ACTIVITY_FINISHED | event == NEW_ONE_APPEARS)
+                        removeHeadache(headache);
+                }
+            });
+            snackbar.show();
+        }
+    }
+
+    private void headacheRecyclerViewInitializer() {
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+        headacheRecyclerView.setLayoutManager(layoutManager);
+        headacheRecyclerView.setHasFixedSize(true);
+        headacheRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        headacheRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+        ItemTouchHelper.SimpleCallback itemToucheHelperCallback = new RecyclerItemTouchHelper(0, ItemTouchHelper.LEFT, this);
+        new ItemTouchHelper(itemToucheHelperCallback).attachToRecyclerView(headacheRecyclerView);
     }
 
     private void headacheRecyclerViewOnClickListener() {
@@ -145,13 +166,12 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
                             final Headache headache = new Headache();
                             headache.setDate(selectedDate.getTime());
                             headache.setRating(ratingBar.getRating());
-                            showHeadacheInformation(headache);
+                            showHeadacheAddingInformation(headache);
                         } else
                             progressBar.setVisibility(View.INVISIBLE);
                     }
                 });
             }
-
             @Override
             public void onLongClick(View view, int position) {
 
@@ -159,11 +179,22 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
         }));
     }
 
+    private void getHeadachesFromDatabase() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                headaches = App.getInstance().getDatabase().headacheDao().getHeadaches();
+                setViewAdapter(headaches);
+            }
+        }).start();
+    }
+
     private void showDateEditor() {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         LayoutInflater inflater = getLayoutInflater();
-        @SuppressLint("InflateParams") final View layout = inflater.inflate(R.layout.dialog_date_changer, null);
+        @SuppressLint("InflateParams") final View layout = inflater.inflate(R.layout.view_date_changer, null);
         final DatePicker datePicker = layout.findViewById(R.id.datePicker);
+        datePicker.updateDate(selectedDate.get(Calendar.YEAR), selectedDate.get(Calendar.MONTH), selectedDate.get(Calendar.DAY_OF_MONTH));
         builder.setView(layout);
         builder.setPositiveButton(R.string.dialog_positive_button, new DialogInterface.OnClickListener() {
             @Override
@@ -189,12 +220,15 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
         dialog.show();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private void showTimeEditor() {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         LayoutInflater inflater = getLayoutInflater();
-        @SuppressLint("InflateParams") final View layout = inflater.inflate(R.layout.dialog_time_changer, null);
+        @SuppressLint("InflateParams") final View layout = inflater.inflate(R.layout.view_time_changer, null);
         final TimePicker timePicker = layout.findViewById(R.id.timePicker);
         timePicker.setIs24HourView(true);
+        timePicker.setHour(selectedDate.get(Calendar.HOUR));
+        timePicker.setMinute(selectedDate.get(Calendar.MINUTE));
         builder.setView(layout);
         builder.setPositiveButton(R.string.dialog_positive_button, new DialogInterface.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.M)
@@ -233,9 +267,9 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
         timeLabel.setText(timeFormat.format(date));
     }
 
-    public void showHeadacheInformation(final Headache headache) {
-        Snackbar snackbar = Snackbar.make(mainLinearLayout, R.string.headache_adding, Snackbar.LENGTH_SHORT);
-        snackbar.setAction(R.string.headache_cancel_btn, new View.OnClickListener() {
+    public void showHeadacheAddingInformation(final Headache headache) {
+        Snackbar snackbar = Snackbar.make(mainLinearLayout, R.string.all_headache_adding, Snackbar.LENGTH_SHORT);
+        snackbar.setAction(R.string.all_cancel_btn, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ratingBar.setRating(0f);
@@ -246,7 +280,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
             public void onDismissed(Snackbar transientBottomBar, int event) {
                 super.onDismissed(transientBottomBar, event);
                 if (event == SELF_DISAPPEARANCE | event == ACTIVITY_FINISHED | event == NEW_ONE_APPEARS) {
-                    Toast.makeText(MainActivity.this, R.string.headache_added, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, R.string.all_headache_added, Toast.LENGTH_SHORT).show();
                     insertHeadache(headache);
                 }
             }
@@ -267,7 +301,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
         }).start();
     }
 
-    private void deleteHeadache(final Headache headache) {
+    private void removeHeadache(final Headache headache) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -276,31 +310,4 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
         }).start();
     }
 
-    @Override
-    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, final int position) {
-        if (viewHolder instanceof ItemViewHolder) {
-
-            final Headache headache = headaches.get(viewHolder.getAdapterPosition());
-            final int deletedPosition = viewHolder.getAdapterPosition();
-
-            mainAdapter.removeItem(viewHolder.getAdapterPosition());
-
-            Snackbar snackbar = Snackbar.make(mainLinearLayout, "Item remvoed", Snackbar.LENGTH_LONG);
-            snackbar.setAction("Anuluj", new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    mainAdapter.restoreItem(headache, deletedPosition);
-                }
-            });
-            snackbar.setActionTextColor(getResources().getColor(R.color.accent));
-            snackbar.addCallback(new Snackbar.Callback() {
-                @Override
-                public void onDismissed(Snackbar snackbar, int event) {
-                    if (event == SELF_DISAPPEARANCE | event == ACTIVITY_FINISHED | event == NEW_ONE_APPEARS)
-                        deleteHeadache(headache);
-                }
-            });
-            snackbar.show();
-        }
-    }
 }

@@ -1,18 +1,14 @@
 <resources>
     <string name="app_name">Headache</string>
 
-    <string name="headache_label">Zaznacz w skali od 1–5 natężenie bólu</string>
-    <string name="date_change_label">Dodaj archiwalny wpis przez \n</string>
-    <string name="button_date_change">zmiane daty,</string>
-    <string name="time_change_label">możesz także \n</string>
-    <string name="button_time_change">ustawić godzine.</string>
+    <string name="main_headache_label">Zaznacz w skali od 1–5 natężenie bólu</string>
 
     <string name="dialog_positive_button">Potwierdz</string>
     <string name="dialog_negative_button">Anuluj</string>
 
-    <string name="headache_adding">Zapisuje w bazie …</string>
-    <string name="headache_added">Zapisano poprawnie!</string>
-    <string name="headache_cancel_btn">ANULUJ</string>
+    <string name="all_headache_adding">Zapisuje w bazie …</string>
+    <string name="all_headache_added">Zapisano poprawnie!</string>
+    <string name="all_cancel_btn">ANULUJ</string>
 
     <string name="set_current_date_time">Ustaw aktualny czas</string>
     <string name="set_date">Zmień date</string>
@@ -20,5 +16,6 @@
 
     <string name="toast_date_time_label_updated">Godzina i data została zmieniona</string>
     <string name="history_headache_label">Historia</string>
-    <string name="delete_headache">Usun wpis</string>
+    <string name="item_remove_headache">Usun wpis</string>
+    <string name="item_headache_removed">Wpis został usunięty</string>
 </resources>

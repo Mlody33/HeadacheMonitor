@@ -40,7 +40,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:text="@string/headache_label"
+        android:text="@string/main_headache_label"
         android:textAlignment="center"
         android:textColor="@color/secondary_text"
         app:layout_constraintLeft_toLeftOf="parent"
