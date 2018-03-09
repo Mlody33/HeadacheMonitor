@@ -37,10 +37,10 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import pl.mzap.headache.adapter.holder.ItemViewHolder;
-import pl.mzap.headache.touch.ClickListener;
+import pl.mzap.headache.touch.RecyclerTouchListener;
 import pl.mzap.headache.touch.RecyclerItemTouchHelper;
 import pl.mzap.headache.touch.RecyclerItemTouchHelperListener;
-import pl.mzap.headache.touch.RecyclerTouchListener;
+import pl.mzap.headache.touch.RecyclerTouch;
 import pl.mzap.headache.adapter.MainAdapter;
 import pl.mzap.headache.database.entity.Headache;
 
@@ -160,7 +160,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
     }
 
     private void headacheRecyclerViewOnClickListener() {
-        headacheRecyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), headacheRecyclerView, new ClickListener() {
+        headacheRecyclerView.addOnItemTouchListener(new RecyclerTouch(getApplicationContext(), headacheRecyclerView, new RecyclerTouchListener() {
             @Override
             public void onClick(View view, int position) {
                 ratingBar = view.findViewById(R.id.rating_bar_header);

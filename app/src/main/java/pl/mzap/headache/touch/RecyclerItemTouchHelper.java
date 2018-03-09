@@ -22,9 +22,8 @@ public class RecyclerItemTouchHelper extends ItemTouchHelper.SimpleCallback {
 
     @Override
     public void onSelectedChanged(RecyclerView.ViewHolder viewHolder, int actionState) {
-        if (viewHolder instanceof ItemViewHolder && viewHolder != null) {
+        if (viewHolder instanceof ItemViewHolder) {
             final View foregroundView = ((ItemViewHolder) viewHolder).headacheViewForeground;
-
             getDefaultUIUtil().onSelected(foregroundView);
         }
     }
