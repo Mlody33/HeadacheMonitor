@@ -19,4 +19,5 @@
     <string name="history_headache_label">Historia</string>
     <string name="item_remove_headache">Usun wpis</string>
     <string name="item_headache_removed">Wpis został usunięty</string>
+    <string name="all_headaches_updated">Odświezono wpisy</string>
 </resources>
