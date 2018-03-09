@@ -225,7 +225,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
             public void onClick(DialogInterface dialog, int which) {
                 Calendar chosenDate = Calendar.getInstance();
                 chosenDate.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth(),
-                        chosenDate.get(Calendar.HOUR_OF_DAY), chosenDate.get(Calendar.MINUTE));
+                        selectedDate.get(Calendar.HOUR_OF_DAY), selectedDate.get(Calendar.MINUTE));
 
                 updateDateTimeLabel(chosenDate.getTime());
             }
