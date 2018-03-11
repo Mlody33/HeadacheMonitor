@@ -23,6 +23,8 @@ public class ItemViewHolder extends RecyclerView.ViewHolder {
     public TextView timeLabel;
     @BindView(R.id.rating_image)
     public ImageView ratingImage;
+    @BindView(R.id.rating_text_label)
+    public TextView ratingText;
 
     public ItemViewHolder(View itemView) {
         super(itemView);

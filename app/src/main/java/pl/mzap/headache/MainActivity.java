@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
         if (getHeadachesHistory())
             setViewAdapter(headaches);
         headacheRecyclerViewInitializer();
-        refreshSwipeOnRefreshingListener();
+        swipeOnRefreshingListener();
 
     }
 
@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
                 break;
             case R.id.menu_refresh:
                 getHeadachesHistory();
-                updateAdapterList();
+                updateViewAdapter();
                 break;
         }
         return true;
@@ -158,6 +158,17 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
         new ItemTouchHelper(itemToucheHelperCallback).attachToRecyclerView(headacheRecyclerView);
     }
 
+    private void setViewAdapter(List<Headache> headaches) {
+        mainAdapter = new MainAdapter(headaches, this);
+        headacheRecyclerView.setAdapter(mainAdapter);
+    }
+
+    private void updateViewAdapter() {
+        mainAdapter.updateItems(headaches);
+        refreshLayout.setRefreshing(false);
+        Toast.makeText(this, R.string.all_headaches_updated, Toast.LENGTH_SHORT).show();
+    }
+
     private void ratingButtonsOnClickListener(final List<ImageButton> ratingButtons) {
         final Headache headache = new Headache();
         headache.setDate(selectedDate.getTime());
@@ -182,21 +193,34 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
         }
     }
 
-    private void refreshSwipeOnRefreshingListener() {
+    private void swipeOnRefreshingListener() {
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 getHeadachesHistory();
-                updateAdapterList();
+                updateViewAdapter();
+                updateDateTimeLabel(new Date());
             }
         });
     }
 
-    private void updateAdapterList() {
-        refreshLayout.setRefreshing(true);
-        mainAdapter.updateItems(headaches);
-        refreshLayout.setRefreshing(false);
-        Toast.makeText(this, R.string.all_headaches_updated, Toast.LENGTH_SHORT).show();
+    private void dateLabelOnClickListener() {
+        dateLabel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDateEditor();
+            }
+        });
+    }
+
+    private void timeLabelOnClickListener() {
+        timeLabel.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
+            @Override
+            public void onClick(View v) {
+                showTimeEditor();
+            }
+        });
     }
 
     private boolean getHeadachesHistory() {
@@ -206,8 +230,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
                 headaches = App.getInstance().getDatabase().headacheDao().getHeadaches();
             }
         });
-        databaseThread.start();
         try {
+            databaseThread.start();
             databaseThread.join();
             return true;
         } catch (InterruptedException e) {
@@ -279,11 +303,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
         dialog.show();
     }
 
-    private void setViewAdapter(List<Headache> headaches) {
-        mainAdapter = new MainAdapter(headaches, this);
-        headacheRecyclerView.setAdapter(mainAdapter);
-    }
-
     private void updateDateTimeLabel(Date date) {
         selectedDate.setTime(date);
         dateLabel.setText(App.getInstance().getDateFormat().format(date));
@@ -325,25 +344,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
         timeLabelOnClickListener();
     }
 
-    private void dateLabelOnClickListener() {
-        dateLabel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDateEditor();
-            }
-        });
-    }
-
-    private void timeLabelOnClickListener() {
-        timeLabel.setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.M)
-            @Override
-            public void onClick(View v) {
-                showTimeEditor();
-            }
-        });
-    }
-
     private void insertHeadache(final Headache headache) {
         new Thread(new Runnable() {
             @RequiresApi(api = Build.VERSION_CODES.M)
@@ -356,7 +356,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
                 ratingBtn3.clearColorFilter();
                 ratingBtn4.clearColorFilter();
                 mainAdapter.addItem(headache);
-                selectedDate.setTime(new Date());
+                selectedDate.setTime(new Date());//TODO WHY I PUT IT HERE?
             }
         }).start();
     }

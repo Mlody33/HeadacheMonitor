@@ -25,4 +25,12 @@
     <string name="headache_scale_2">Headache scale 2</string>
     <string name="headache_scale_3">Headache scale 3</string>
     <string name="headache_scale_4">Headache scale 4</string>
+
+    <string-array name="headache_text_scale">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
+
 </resources>

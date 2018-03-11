@@ -67,18 +67,24 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         } else if (holder instanceof ItemViewHolder) {
             ((ItemViewHolder) holder).dateLabel.setText(App.getInstance().getDateFormat().format(headache.getDate()));
             ((ItemViewHolder) holder).timeLabel.setText(App.getInstance().getTimeFormat().format(headache.getDate()));
-            switch((int) headache.getRating()){
+
+            String ratingTextScale[] = main.getApplicationContext().getResources().getStringArray(R.array.headache_text_scale);
+            switch ((int) headache.getRating()) {
                 case 1:
                     ((ItemViewHolder) holder).ratingImage.setImageResource(R.drawable.rating_btn_1);
+                    ((ItemViewHolder) holder).ratingText.setText(ratingTextScale[(int) headache.getRating() - 1]);
                     break;
                 case 2:
                     ((ItemViewHolder) holder).ratingImage.setImageResource(R.drawable.rating_btn_2);
+                    ((ItemViewHolder) holder).ratingText.setText(ratingTextScale[(int) headache.getRating() - 1]);
                     break;
                 case 3:
                     ((ItemViewHolder) holder).ratingImage.setImageResource(R.drawable.rating_btn_3);
+                    ((ItemViewHolder) holder).ratingText.setText(ratingTextScale[(int) headache.getRating() - 1]);
                     break;
                 case 4:
                     ((ItemViewHolder) holder).ratingImage.setImageResource(R.drawable.rating_btn_4);
+                    ((ItemViewHolder) holder).ratingText.setText(ratingTextScale[(int) headache.getRating() - 1]);
                     break;
             }
 
