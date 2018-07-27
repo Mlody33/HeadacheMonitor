@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
@@ -58,6 +59,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
     SwipeRefreshLayout refreshLayout;
     @BindView(R.id.mainLinearLayout)
     LinearLayout mainLinearLayout;
+    @BindView(R.id.fab)
+    FloatingActionButton fab;
 
     private List<Headache> headaches = new ArrayList<>();
     private Calendar selectedDate;
@@ -82,6 +85,17 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
             setViewAdapter(headaches);
         headacheRecyclerViewInitializer();
         swipeOnRefreshingListener();
+        floatingActionButtonListener();
+    }
+
+    private void floatingActionButtonListener() {
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
     }
 
     @Override
@@ -196,8 +210,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                for(Headache headache: headaches){
-                    Log.d(TAG, "ID: "+headache.getId() + ", Date: " + headache.getDate().toString() + ", Rating: " + headache.getRating());
+                for (Headache headache : headaches) {
+                    Log.d(TAG, "ID: " + headache.getId() + ", Date: " + headache.getDate().toString() + ", Rating: " + headache.getRating());
                 }
                 getHeadachesHistory();
                 updateViewAdapter();
