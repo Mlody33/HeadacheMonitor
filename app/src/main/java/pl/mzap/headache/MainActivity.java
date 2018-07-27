@@ -82,7 +82,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
             setViewAdapter(headaches);
         headacheRecyclerViewInitializer();
         swipeOnRefreshingListener();
-
     }
 
     @Override
@@ -197,6 +196,9 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                for(Headache headache: headaches){
+                    Log.d(TAG, "ID: "+headache.getId() + ", Date: " + headache.getDate().toString() + ", Rating: " + headache.getRating());
+                }
                 getHeadachesHistory();
                 updateViewAdapter();
                 updateDateTimeLabel(new Date());
