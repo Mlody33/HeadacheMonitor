@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
 
         if (getHeadachesHistory())
             setViewAdapter(headaches);
+
         headacheRecyclerViewInitializer();
         swipeOnRefreshingListener();
         floatingActionButtonListener();

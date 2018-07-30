@@ -30,6 +30,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import pl.mzap.headache.database.entity.Headache;
 
 public class HeadacheActivity extends AppCompatActivity {
 
@@ -37,7 +38,7 @@ public class HeadacheActivity extends AppCompatActivity {
     private static final int ACTIVITY_FINISHED = 3;
     private static final int NEW_ONE_APPEARS = 4;
 
-    private Calendar selectedDate;
+    private Calendar selectedDate = Calendar.getInstance();
 
     @BindView(R.id.headache_toolbar)
     Toolbar toolbar;
@@ -67,8 +68,6 @@ public class HeadacheActivity extends AppCompatActivity {
         if (getSupportActionBar() != null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        selectedDate = Calendar.getInstance();
-        selectedDate.setTime(new Date());
         updateDateTimeLabel(new Date());
 
         dateLabelOnClickListener();
@@ -112,7 +111,7 @@ public class HeadacheActivity extends AppCompatActivity {
     }
 
     private void ratingButtonsOnClickListener() {
-        final pl.mzap.headache.database.entity.Headache headache = new pl.mzap.headache.database.entity.Headache();
+        final Headache headache = new Headache();
 
         List<ImageButton> ratingButtons = Arrays.asList(ratingOne, ratingTwo, ratingThree, ratingFour);
 
