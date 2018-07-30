@@ -71,6 +71,7 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public void addItem(Headache headache) {
         headaches.add(0, headache);
+        notifyItemInserted(0);
     }
 
     public void restoreItem(Headache headache, int deletedPosition) {

@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.menu.MenuBuilder;
@@ -41,8 +42,10 @@ public class NewHeadacheActivity extends AppCompatActivity {
 
     private Calendar selectedDate;
 
-    @BindView(R.id.toolbar)
+    @BindView(R.id.new_headache_toolbar)
     Toolbar toolbar;
+    @BindView(R.id.new_headache_swipeRefresh)
+    SwipeRefreshLayout refreshLayout;
     @BindView(R.id.newHeadacheLayout)
     ConstraintLayout newHeadacheLayout;
     @BindView(R.id.date_header_label)
@@ -67,10 +70,12 @@ public class NewHeadacheActivity extends AppCompatActivity {
 
         selectedDate = Calendar.getInstance();
         selectedDate.setTime(new Date());
+        updateDateTimeLabel(new Date());
 
         dateLabelOnClickListener();
         timeLabelOnClickListener();
         ratingButtonsOnClickListener();
+        swipeOnRefreshingListener();
     }
 
     @SuppressLint("RestrictedApi")
@@ -98,9 +103,17 @@ public class NewHeadacheActivity extends AppCompatActivity {
         return true;
     }
 
+    private void swipeOnRefreshingListener() {
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                updateDateTimeLabel(new Date());
+            }
+        });
+    }
+
     private void ratingButtonsOnClickListener() {
         final Headache headache = new Headache();
-        headache.setDate(selectedDate.getTime());
 
         List<ImageButton> ratingButtons = Arrays.asList(ratingOne, ratingTwo, ratingThree, ratingFour);
 
@@ -117,6 +130,7 @@ public class NewHeadacheActivity extends AppCompatActivity {
                         headache.setRating(3f);
                     if (rating.getId() == ratingFour.getId())
                         headache.setRating(4f);
+                    headache.setDate(selectedDate.getTime());
                     rating.setColorFilter(getColor(R.color.accent));
                     showHeadacheAddingInformation(headache);
                 }
@@ -142,10 +156,9 @@ public class NewHeadacheActivity extends AppCompatActivity {
                 super.onDismissed(transientBottomBar, event);
                 if (event == SELF_DISAPPEARANCE | event == ACTIVITY_FINISHED | event == NEW_ONE_APPEARS) {
                     Toast.makeText(NewHeadacheActivity.this, R.string.all_headache_added, Toast.LENGTH_SHORT).show();
-//                    insertHeadache(headache);
                     Intent resultIntent = new Intent();
                     resultIntent.putExtra("Class", headache);
-                    setResult(1, resultIntent);
+                    setResult(45698, resultIntent);
                     finish();
                 }
             }
@@ -233,10 +246,12 @@ public class NewHeadacheActivity extends AppCompatActivity {
     }
 
     private void updateDateTimeLabel(Date date) {
+        refreshLayout.setRefreshing(true);
         selectedDate.setTime(date);
         dateLabel.setText(App.getInstance().getDateFormat().format(date));
         timeLabel.setText(App.getInstance().getTimeFormat().format(date));
         Toast.makeText(this, R.string.all_date_updated, Toast.LENGTH_SHORT).show();
+        refreshLayout.setRefreshing(false);
     }
 
 

@@ -37,7 +37,7 @@ import pl.mzap.headache.touch.RecyclerItemTouchHelperListener;
 public class MainActivity extends AppCompatActivity implements RecyclerItemTouchHelperListener {
 
     private static final String TAG = "MAIN_ACTIVITY";
-    private static final int NEW_HEADACHE_ADDED = 1;
+    private static final int NEW_HEADACHE_ADDED = 11;
 
     private static final int SELF_DISAPPEARANCE = 2;
     private static final int ACTIVITY_FINISHED = 3;
@@ -52,10 +52,9 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
     @BindView(R.id.mainLinearLayout)
     LinearLayout mainLinearLayout;
     @BindView(R.id.fab)
-    FloatingActionButton fab;
+    FloatingActionButton addingNewHeadacheButton;
 
     private List<Headache> headaches = new ArrayList<>();
-
     private MainAdapter mainAdapter;
 
     @Override
@@ -70,11 +69,10 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
         headacheRecyclerViewInitializer();
         swipeOnRefreshingListener();
         floatingActionButtonListener();
-
     }
 
     private void floatingActionButtonListener() {
-        fab.setOnClickListener(new View.OnClickListener() {
+        addingNewHeadacheButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent newHeadacheActivity = new Intent(getApplicationContext(), NewHeadacheActivity.class);
@@ -86,6 +84,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
     @Override
     protected void onResume() {
         super.onResume();
+        getHeadachesHistory();
         updateViewAdapter();
     }
 
@@ -110,9 +109,13 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == NEW_HEADACHE_ADDED){
-            Headache headache = (Headache) data.getSerializableExtra("Class");
-            insertHeadache(headache);
+        switch (requestCode) {
+            case NEW_HEADACHE_ADDED:
+                if (resultCode == 45698) {
+                    Headache headache = (Headache) data.getSerializableExtra("Class");
+                    insertHeadache(headache);
+                }
+                break;
         }
     }
 
@@ -159,6 +162,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
     }
 
     private void updateViewAdapter() {
+        getHeadachesHistory();
         mainAdapter.updateItems(headaches);
         refreshLayout.setRefreshing(false);
         Toast.makeText(this, R.string.all_headaches_updated, Toast.LENGTH_SHORT).show();
@@ -172,7 +176,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
                 for (Headache headache : headaches) {
                     Log.d(TAG, "ID: " + headache.getId() + ", Date: " + headache.getDate().toString() + ", Rating: " + headache.getRating());
                 }
-                getHeadachesHistory();
                 updateViewAdapter();
             }
         });
