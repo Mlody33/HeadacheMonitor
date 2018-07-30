@@ -75,8 +75,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
         addingNewHeadacheButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent newHeadacheActivity = new Intent(getApplicationContext(), NewHeadacheActivity.class);
-                startActivityForResult(newHeadacheActivity, NEW_HEADACHE_ADDED);
+                Intent headacheActivity = new Intent(getApplicationContext(), HeadacheActivity.class);
+                startActivityForResult(headacheActivity, NEW_HEADACHE_ADDED);
             }
         });
     }
@@ -100,7 +100,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_set_current_date_time:
+            case R.id.menu_refresh:
+                refreshLayout.setRefreshing(true);
                 updateViewAdapter();
                 break;
         }

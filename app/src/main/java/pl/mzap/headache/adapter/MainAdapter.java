@@ -26,7 +26,7 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_headache, parent, false);
+                .inflate(R.layout.row_headache, parent, false);
         return new ItemViewHolder(itemView);
     }
 

@@ -33,5 +33,6 @@
         <item>4</item>
     </string-array>
     <string name="title_activity_history">HistoryActivity</string>
+    <string name="title_activity_headache">Headache</string>
 
 </resources>

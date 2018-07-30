@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
-import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
@@ -30,11 +30,8 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import pl.mzap.headache.database.entity.Headache;
 
-public class NewHeadacheActivity extends AppCompatActivity {
-
-    private static final String TAG = "NEW_HEADACHE_ACTIVITY";
+public class HeadacheActivity extends AppCompatActivity {
 
     private static final int SELF_DISAPPEARANCE = 2;
     private static final int ACTIVITY_FINISHED = 3;
@@ -42,12 +39,12 @@ public class NewHeadacheActivity extends AppCompatActivity {
 
     private Calendar selectedDate;
 
-    @BindView(R.id.new_headache_toolbar)
+    @BindView(R.id.headache_toolbar)
     Toolbar toolbar;
-    @BindView(R.id.new_headache_swipeRefresh)
+    @BindView(R.id.headache_layout)
+    CoordinatorLayout headacheLayout;
+    @BindView(R.id.headache_swipe_refresh)
     SwipeRefreshLayout refreshLayout;
-    @BindView(R.id.newHeadacheLayout)
-    ConstraintLayout newHeadacheLayout;
     @BindView(R.id.date_header_label)
     TextView dateLabel;
     @BindView(R.id.time_header_label)
@@ -64,9 +61,11 @@ public class NewHeadacheActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_new_headache);
+        setContentView(R.layout.activity_headache);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null)
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         selectedDate = Calendar.getInstance();
         selectedDate.setTime(new Date());
@@ -81,7 +80,7 @@ public class NewHeadacheActivity extends AppCompatActivity {
     @SuppressLint("RestrictedApi")
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.new_headache_menu, menu);
+        getMenuInflater().inflate(R.menu.headache_menu, menu);
         ((MenuBuilder) menu).setOptionalIconsVisible(true);
         return true;
     }
@@ -113,7 +112,7 @@ public class NewHeadacheActivity extends AppCompatActivity {
     }
 
     private void ratingButtonsOnClickListener() {
-        final Headache headache = new Headache();
+        final pl.mzap.headache.database.entity.Headache headache = new pl.mzap.headache.database.entity.Headache();
 
         List<ImageButton> ratingButtons = Arrays.asList(ratingOne, ratingTwo, ratingThree, ratingFour);
 
@@ -138,8 +137,8 @@ public class NewHeadacheActivity extends AppCompatActivity {
         }
     }
 
-    public void showHeadacheAddingInformation(final Headache headache) {
-        Snackbar snackbar = Snackbar.make(newHeadacheLayout, R.string.all_headache_adding, Snackbar.LENGTH_SHORT);
+    public void showHeadacheAddingInformation(final pl.mzap.headache.database.entity.Headache headache) {
+        Snackbar snackbar = Snackbar.make(headacheLayout, R.string.all_headache_adding, Snackbar.LENGTH_SHORT);
         snackbar.setAction(R.string.all_cancel_btn, new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
@@ -155,7 +154,7 @@ public class NewHeadacheActivity extends AppCompatActivity {
             public void onDismissed(Snackbar transientBottomBar, int event) {
                 super.onDismissed(transientBottomBar, event);
                 if (event == SELF_DISAPPEARANCE | event == ACTIVITY_FINISHED | event == NEW_ONE_APPEARS) {
-                    Toast.makeText(NewHeadacheActivity.this, R.string.all_headache_added, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(HeadacheActivity.this, R.string.all_headache_added, Toast.LENGTH_SHORT).show();
                     Intent resultIntent = new Intent();
                     resultIntent.putExtra("Class", headache);
                     setResult(45698, resultIntent);
@@ -186,7 +185,7 @@ public class NewHeadacheActivity extends AppCompatActivity {
     }
 
     private void showDateEditor() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(NewHeadacheActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(HeadacheActivity.this);
         LayoutInflater inflater = getLayoutInflater();
         @SuppressLint("InflateParams") final View layout = inflater.inflate(R.layout.view_date_changer, null);
         final DatePicker datePicker = layout.findViewById(R.id.datePicker);
@@ -215,7 +214,7 @@ public class NewHeadacheActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void showTimeEditor() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(NewHeadacheActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(HeadacheActivity.this);
         LayoutInflater inflater = getLayoutInflater();
         @SuppressLint("InflateParams") final View layout = inflater.inflate(R.layout.view_time_changer, null);
         final TimePicker timePicker = layout.findViewById(R.id.timePicker);
@@ -253,6 +252,5 @@ public class NewHeadacheActivity extends AppCompatActivity {
         Toast.makeText(this, R.string.all_date_updated, Toast.LENGTH_SHORT).show();
         refreshLayout.setRefreshing(false);
     }
-
 
 }
